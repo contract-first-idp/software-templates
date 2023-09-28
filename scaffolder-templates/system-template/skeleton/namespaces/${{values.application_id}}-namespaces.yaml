@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${{values.application_id}}-prod
+  labels:
+    app : ${{values.application_id}}
+    team: ${{values.owner}}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${{values.application_id}}-qa
+  labels:
+    app : ${{values.application_id}}
+    team: ${{values.owner}}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${{values.application_id}}-dev
+  labels:
+    app : ${{values.application_id}}
+    team: ${{values.owner}}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${{values.application_id}}-build
+  labels:
+    app : ${{values.application_id}}
+    team: ${{values.owner}}

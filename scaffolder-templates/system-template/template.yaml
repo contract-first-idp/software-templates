@@ -1,0 +1,77 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: system-template
+  title: System Template
+  description: Create a System to contain a set of application Components
+spec:
+  owner: service@example.com
+  type: system
+
+  parameters:
+    - title: Provide information on this application
+      required:
+        - application_id
+        - owner
+        - description
+      properties:
+        application_id:
+          title: Name
+          type: string
+          description: Unique name of this application
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this application is for.
+        owner:
+          title: Owner
+          type: string
+          description: Owner of this applications
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds: 
+              - Group
+
+  steps:
+    - id: template-namespaces 
+      name: Generate PR for new System
+      action: fetch:template
+      input:
+        url: ./skeleton
+        copyWithoutRender: []
+        values:
+          application_id: ${{ parameters.application_id }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+
+    - id: pull-request
+      name: make a pr with the new system
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?repo=demo-systems&owner=janus-api-idp
+        branchName: ${{ parameters.application_id }}
+        title: namespaces for ${{ parameters.application_id }}
+        description: namespaces for ${{ parameters.application_id }}
+        
+
+    - id: template-gitops
+      name: Fetch Skeleton + Template
+      action: fetch:template
+      input:
+        url: ./app-gitops
+        copyWithoutRender: []
+        values: {}
+        targetPath: ./app-gitops
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.application_id }}
+        repoUrl: github.com?repo=${{ parameters.application_id }}-gitops&owner=janus-api-idp
+        repoVisibility: public
+        sourcePath: ./app-gitops
+        deleteBranchOnMerge: true
+        access: janus-api-idp/${{ parameters.owner }}
+        protectDefaultBranch: false

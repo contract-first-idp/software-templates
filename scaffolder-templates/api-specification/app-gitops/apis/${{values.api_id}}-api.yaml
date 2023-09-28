@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1 
+kind: API
+metadata:
+  name: ${{ values.api_id }}
+  description: ${{values.description}}
+spec:
+  type: openapi
+  owner: ${{values.owner }}
+  system: ${{ parameters.application }}
+  definition:
+    $text: ./api/myapi.yml
