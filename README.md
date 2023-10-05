@@ -1,1 +1,1 @@
-# software-templates
+# Backstage Golden Path Software Templates
