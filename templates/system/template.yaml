@@ -73,5 +73,5 @@ spec:
         repoVisibility: public
         sourcePath: ./app-gitops
         deleteBranchOnMerge: true
-        access: janus-api-idp/${{ parameters.owner }}
+        #access: janus-api-idp/${{ parameters.owner }}
         protectDefaultBranch: false
