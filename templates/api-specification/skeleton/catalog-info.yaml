@@ -10,4 +10,4 @@ spec:
   owner: ${{values.owner | dump}}
   lifecycle: experimental
   definition:
-    $openapi: ${{ values.destination }}/blob/main/specification.yaml
+    $openapi: ${{ values.destination }}/blob/master/specification.yaml
