@@ -66,7 +66,7 @@ spec:
           description: ${{ parameters.description }}
           artifact_id: ${{ parameters.api_id }}
           owner: ${{ parameters.owner }}
-          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+          destination: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
           http_port: 8080
           application: ${{ parameters.application }}
 
