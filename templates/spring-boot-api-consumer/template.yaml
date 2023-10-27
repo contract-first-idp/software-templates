@@ -86,7 +86,7 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         repoVisibility: public
         deleteBranchOnMerge: true
-        access: janus-api-idp/${{ parameters.owner }}
+        #access: janus-api-idp/${{ parameters.owner }}
         baseURL: control-cluster-raffa.demo.red-chesterfield.com
         protectDefaultBranch: false        
 

@@ -86,7 +86,7 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         repoVisibility: public
         deleteBranchOnMerge: true
-        access: janus-api-idp/${{ parameters.owner }}
+        #access: janus-api-idp/${{ parameters.owner }}
         protectDefaultBranch: false        
 
     - id: register
