@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: ${{ values.component_id }}-pipeline
-  namespace: ${{values.application.split(":")[1]}}-build
+  namespace: ${{values.application.split("/")[1]}}-build
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -17,7 +17,7 @@ spec:
           tag: latest
   destination:
     server: https://kubernetes.default.svc
-    namespace: ${{values.application.split(":")[1]}}-build
+    namespace: ${{values.application.split("/")[1]}}-build
   syncPolicy:
     automated: 
       prune: true
