@@ -1,0 +1,11 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  host: {{ .Release.Name }}.{{ .Values.global.clusterRouterBase }}
+  port:
+    targetPort: 8080 
+  to:
+    kind: Service
+    name: {{ .Release.Name }}
