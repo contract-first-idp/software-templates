@@ -5,20 +5,23 @@ metadata:
 spec:
   workspaces:
   - name: maven-repo
-  - name: quay-credentials
   - name: maven-settings
 
   params:
-    - name: dockerfilePath
+    - default: ./src/main/docker/Dockerfile
+      name: dockerfilePath
       type: string
       description: Path containing the Dockerfile for the final image
-    - name: git-url
+    - default: https://github.com/janus-api-idp/${{ values.component_id }}
+      name: git-url
       type: string
       description: "Upstream Source Repository Url"
-    - name: git-revision
+    - default: master
+      name: git-revision
       type: string
       description: "Upstream source code revision to pull"
-    - name: image-name
+    - default: image-registry.openshift-image-registry.svc:5000/${{values.application.split("/")[1]}}-build/${{ values.component_id }}:latest
+      name: image-name
       type: string
       description: "Target OCI image name"
 
@@ -70,8 +73,6 @@ spec:
       name: buildah
       kind: ClusterTask
     workspaces:
-    - name: dockerconfig
-      workspace: quay-credentials
     - name: source
       workspace: maven-repo
     params:
