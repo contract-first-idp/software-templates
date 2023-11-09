@@ -81,3 +81,25 @@ spec:
         deleteBranchOnMerge: true
         #access: janus-api-idp/${{ parameters.owner }}
         protectDefaultBranch: false        
+
+
+    - id: template-tenant-gitops 
+      name: tenant Argcd Fetch Skeleton + Template
+      action: fetch:template
+      input:
+        url: ./app-gitops
+        copyWithoutRender: []
+        values:
+          api_id: ${{ parameters.api_id }}
+          application: ${{ parameters.application }}
+        targetPath: ./tenant-gitops          
+
+    - id: pull-request
+      name: make a pr with the new argocd
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-gitops&owner=janus-api-idp
+        branchName: ${{ parameters.api_id }}
+        title: argocd apps for ${{ parameters.api_id }}
+        description: argocd apps ${{ parameters.api_id}}
+        sourcePath: ./tenant-gitops  
