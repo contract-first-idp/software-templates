@@ -20,7 +20,7 @@ spec:
       name: git-revision
       type: string
       description: "Upstream source code revision to pull"
-    - default: image-registry.openshift-image-registry.svc:5000/${{values.application.split("/")[1]}}-build/${{ values.component_id }}:latest
+    - default: image-registry.openshift-image-registry.svc:5000/${{values.application.split("/")[1]}}-dev/${{ values.component_id }}:latest
       name: image-name
       type: string
       description: "Target OCI image name"

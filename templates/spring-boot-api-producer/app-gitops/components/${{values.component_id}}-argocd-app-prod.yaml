@@ -14,6 +14,7 @@ spec:
     helm:
       values: | 
         image: 
+          repository: image-registry.openshift-image-registry.svc:5000/${{values.application.split("/")[1]}}-prod/${{ values.component_id }}
           tag: latest
   destination:
     server: https://kubernetes.default.svc
