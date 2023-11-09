@@ -11,10 +11,6 @@ spec:
     repoURL: https://github.com/janus-api-idp/${{ values.component_id }}
     targetRevision: HEAD
     path: .tekton
-    helm:
-      values: | 
-        image: 
-          tag: latest
   destination:
     server: https://kubernetes.default.svc
     namespace: ${{values.application.split("/")[1]}}-build
