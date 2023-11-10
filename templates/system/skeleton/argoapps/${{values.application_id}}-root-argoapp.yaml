@@ -9,9 +9,10 @@ spec:
   project: default
   source:
     repoURL: https://github.com/janus-api-idp/${{values.application_id}}-gitops.git
-    path: components
+    path: "."
     directory:
       include: "*.yaml"
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: openshift-gitops
