@@ -28,7 +28,7 @@ spec:
         description:
           title: Description
           type: string
-          description: Help others understand what this website is for.
+          description: Help others understand what this component does
         owner:
           title: Owner
           type: string
@@ -44,24 +44,11 @@ spec:
           ui:field: OwnedEntityPicker
           ui:options:
             allowedKinds:
-            - System       
-    - title: Choose a location  
-      required:
-        - repoUrl
-      properties: 
-        repoUrl:
-          title: Repository Location
-          type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
-            allowedOwners:
-              - janus-api-idp  
+            - System
 
   steps:
     - id: template
-      name: Code Fetch Skeleton + Template
+      name: Render Component Template
       action: fetch:template
       input:
         url: ./skeleton
@@ -72,33 +59,30 @@ spec:
           artifact_id: ${{ parameters.component_id }}
           java_package_name: ${{ parameters.java_package_name }}
           owner: ${{ parameters.owner }}
-          destination: ${{ parameters.repoUrl | parseRepoUrl }}
-          http_port: 8080
+          destination: https://github.com/janus-api-idp/${{ parameters.component_id }}
           application: ${{ parameters.application }}
-          
 
     - id: publish
-      name: Publish
+      name: Publish Component Repository
       action: publish:github
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.component_id }}
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: github.com?repo=${{ parameters.component_id }}&owner=janus-api-idp
         repoVisibility: public
         deleteBranchOnMerge: true
         #access: janus-api-idp/${{ parameters.owner }}
-        baseURL: control-cluster-raffa.demo.red-chesterfield.com
         protectDefaultBranch: false        
 
     - id: register
-      name: Register
+      name: Register Component
       action: catalog:register
       input:
         repoContentsUrl: '${{ steps.publish.output.repoContentsUrl }}'
         catalogInfoPath: '/catalog-info.yaml'
 
     - id: template-tenant-gitops 
-      name: tenant Argcd Fetch Skeleton + Template
+      name: Render GitOps Template
       action: fetch:template
       input:
         url: ./app-gitops
@@ -116,7 +100,7 @@ spec:
         targetPath: ./tenant-gitops          
 
     - id: pull-request
-      name: make a pr with the new argocd
+      name: Open PR to System
       action: publish:github:pull-request
       input:
         repoUrl: github.com?repo=${{ parameters.application.split(":")[1] }}-gitops&owner=janus-api-idp
