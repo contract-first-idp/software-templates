@@ -5,4 +5,5 @@ info:
     ${{ parameters.description }}
   version: 0.0.1
 servers:
-  - url: api/v1
+  - url: https://microcks-microcks.apps.cluster-kbrvx.dynamic.opentlc.com/rest/${{ parameters.api_id }}/0.0.1/test/latest
+paths: {}
