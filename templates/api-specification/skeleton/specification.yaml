@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
-  title: ${{ parameters.api_id }}
+  title: ${{ values.api_id }}
   description: |-
-    ${{ parameters.description }}
+    ${{ values.description }}
   version: 0.0.1
 servers:
-  - url: "https://microcks-microcks.apps.cluster-kbrvx.dynamic.opentlc.com/rest/${{ parameters.api_id }}/0.0.1/"
+  - url: "https://microcks-microcks.apps.cluster-kbrvx.dynamic.opentlc.com/rest/${{ values.api_id }}/0.0.1/"
 paths: {}
