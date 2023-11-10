@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}-pipeline-registry-access
 subjects:
   - kind: ServiceAccount
-    name: builder
+    name: pipeline
     namespace: ${{values.application.split("/")[1]}}-build
 roleRef:
   apiGroup: rbac.authorization.k8s.io
