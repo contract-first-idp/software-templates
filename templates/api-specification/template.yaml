@@ -7,7 +7,7 @@ metadata:
 spec:
   owner: service@example.com
   type: api
-  
+
   parameters:
     - title: API server parameters
       required:
@@ -39,24 +39,11 @@ spec:
           ui:field: OwnedEntityPicker
           ui:options:
             allowedKinds:
-            - System       
-    - title: Choose a location  
-      required:
-        - repoUrl
-      properties: 
-        repoUrl:
-          title: Repository Location
-          type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
-            allowedOwners:
-              - janus-api-idp  
+            - System
 
   steps:
     - id: template
-      name: Code Fetch Skeleton + Template
+      name: Render API Template
       action: fetch:template
       input:
         url: ./skeleton
@@ -64,14 +51,13 @@ spec:
         values:
           api_id: ${{ parameters.api_id }}
           description: ${{ parameters.description }}
-          artifact_id: ${{ parameters.api_id }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
+          destination: https://github.com/janus-api-idp/${{ parameters.api_id }}
           http_port: 8080
           application: ${{ parameters.application }}
 
     - id: publish
-      name: Publish
+      name: Publish API Repository
       action: publish:github
       input:
         allowedHosts: ['github.com']
@@ -80,11 +66,10 @@ spec:
         repoVisibility: public
         deleteBranchOnMerge: true
         #access: janus-api-idp/${{ parameters.owner }}
-        protectDefaultBranch: false        
-
+        protectDefaultBranch: false
 
     - id: template-tenant-gitops 
-      name: tenant Argcd Fetch Skeleton + Template
+      name: Render GitOps Template
       action: fetch:template
       input:
         url: ./app-gitops
@@ -92,14 +77,14 @@ spec:
         values:
           api_id: ${{ parameters.api_id }}
           application: ${{ parameters.application }}
-        targetPath: ./tenant-gitops          
+        targetPath: ./tenant-gitops
 
     - id: pull-request
-      name: make a pr with the new argocd
+      name: Open PR to System
       action: publish:github:pull-request
       input:
         repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-gitops&owner=janus-api-idp
         branchName: ${{ parameters.api_id }}
         title: argocd apps for ${{ parameters.api_id }}
         description: argocd apps ${{ parameters.api_id}}
-        sourcePath: ./tenant-gitops  
+        sourcePath: ./tenant-gitops
