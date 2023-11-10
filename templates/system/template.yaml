@@ -34,7 +34,7 @@ spec:
 
   steps:
     - id: template-namespaces 
-      name: Generate PR for new System
+      name: Render System Onboarding Template
       action: fetch:template
       input:
         url: ./skeleton
@@ -45,17 +45,16 @@ spec:
           owner: ${{ parameters.owner }}
 
     - id: pull-request
-      name: make a pr with the new system
+      name: Open PR to Demo Systems
       action: publish:github:pull-request
       input:
         repoUrl: github.com?repo=demo-systems&owner=janus-api-idp
         branchName: ${{ parameters.application_id }}
         title: namespaces for ${{ parameters.application_id }}
         description: namespaces for ${{ parameters.application_id }}
-        
 
     - id: template-gitops
-      name: Fetch Skeleton + Template
+      name: Render System GitOps Template
       action: fetch:template
       input:
         url: ./app-gitops
@@ -64,7 +63,7 @@ spec:
         targetPath: ./app-gitops
 
     - id: publish
-      name: Publish
+      name: Publish System GitOps Repository
       action: publish:github
       input:
         allowedHosts: ['github.com']

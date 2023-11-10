@@ -53,7 +53,6 @@ spec:
           description: ${{ parameters.description }}
           owner: ${{ parameters.owner }}
           destination: https://github.com/janus-api-idp/${{ parameters.api_id }}
-          http_port: 8080
           application: ${{ parameters.application }}
 
     - id: publish
