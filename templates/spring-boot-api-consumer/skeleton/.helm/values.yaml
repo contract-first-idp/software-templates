@@ -1,0 +1,29 @@
+global:
+  # Ingress base domain
+  clusterRouterBase: apps.cluster-7z477.7z477.sandbox1180.opentlc.com
+
+# Define the Docker image repository and tag for your Java application.
+image:
+  repository: quay.io/maximilianb/hqoas-spring-demo
+  tag: latest
+
+# Define the container port your Java application listens on.
+containerPort: 8080
+
+# Specify the number of replicas (pods) for your Java application.
+replicaCount: 1
+
+# Define resource requests and limits for your Java application containers.
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "200m"
+
+
+
+
+
+ 

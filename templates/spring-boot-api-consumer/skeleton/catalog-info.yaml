@@ -10,5 +10,5 @@ spec:
   lifecycle: experimental
   owner: ${{values.owner | dump}}
   system: ${{values.application}}
-  providesApis: 
+  consumesApis: 
     - ${{values.api_id}}

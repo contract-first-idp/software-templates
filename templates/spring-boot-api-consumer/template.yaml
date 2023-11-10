@@ -45,6 +45,14 @@ spec:
           ui:options:
             allowedKinds:
             - System
+        api:
+          title: API
+          type: string
+          description: The API being implemented
+          ui:field: OwnedEntityPicker
+          ui:options:
+            allowedKinds:
+            - API
 
   steps:
     - id: template
@@ -61,6 +69,7 @@ spec:
           owner: ${{ parameters.owner }}
           destination: https://github.com/janus-api-idp/${{ parameters.component_id }}
           application: ${{ parameters.application }}
+          api_id: ${{ parameters.api.split("/")[1] }}
 
     - id: publish
       name: Publish Component Repository
