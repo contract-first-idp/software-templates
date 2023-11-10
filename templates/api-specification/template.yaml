@@ -62,7 +62,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.api_id }}
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: github.com?repo=${{ parameters.api_id }}&owner=janus-api-idp
         repoVisibility: public
         deleteBranchOnMerge: true
         #access: janus-api-idp/${{ parameters.owner }}
