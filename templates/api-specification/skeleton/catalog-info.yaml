@@ -5,7 +5,7 @@ metadata:
   title: ${{values.api_id | dump}}
   description: ${{values.description | dump}}
   annotations:
-    backstage.io/spectral-ruleset-url: https://github.com/janus-api-idp/api-spec-prototype/blob/main/.spectral.yaml
+    backstage.io/spectral-ruleset-url: https://raw.githubusercontent.com/janus-api-idp/api-spec-prototype/main/.spectral.yaml
 spec:
   type: openapi
   system: ${{values.application}}
