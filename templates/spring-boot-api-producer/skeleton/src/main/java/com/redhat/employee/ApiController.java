@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-
+/*
 @Controller
 @RequestMapping("${openapi.test.base-path:/}")
-public class ApiController /* implements SomeAPI */ {
+public class ApiController implements SomeAPI {
 
     private final NativeWebRequest request;
 
@@ -44,3 +44,4 @@ public class ApiController /* implements SomeAPI */ {
     }
 
 }
+*/
