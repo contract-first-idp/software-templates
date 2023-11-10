@@ -10,3 +10,4 @@ spec:
   lifecycle: experimental
   owner: ${{values.owner | dump}}
   system: ${{values.application}}
+  implements: ${{values.api_id}}
