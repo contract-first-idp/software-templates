@@ -1,6 +1,6 @@
 global:
   # Ingress base domain
-  clusterRouterBase: apps.cluster-7z477.7z477.sandbox1180.opentlc.com
+  clusterRouterBase: apps.cluster-7s4kl.dynamic.redhatworkshops.io
 
 # Define the Docker image repository and tag for your Java application.
 image:

@@ -67,7 +67,7 @@ spec:
           artifact_id: ${{ parameters.component_id }}
           java_package_name: ${{ parameters.java_package_name }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/janus-api-idp/${{ parameters.component_id }}
+          destination: https://github.com/contract-first-id[/${{ parameters.component_id }}
           application: ${{ parameters.application }}
           api_id: ${{ parameters.api.split("/")[1] }}
 
@@ -77,10 +77,10 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.component_id }}
-        repoUrl: github.com?repo=${{ parameters.component_id }}&owner=janus-api-idp
+        repoUrl: github.com?repo=${{ parameters.component_id }}&owner=contract-first-id[
         repoVisibility: public
         deleteBranchOnMerge: true
-        #access: janus-api-idp/${{ parameters.owner }}
+        #access: contract-first-id[/${{ parameters.owner }}
         protectDefaultBranch: false        
 
     - id: register
@@ -103,7 +103,7 @@ spec:
           java_package_name: ${{ parameters.java_package_name }}
           owner: ${{ parameters.owner }}
           application: ${{ parameters.application }}
-          organization: janus-api-idp
+          organization: contract-first-id[
           team: ${{ parameters.owner }}
           repo_id: ${{ parameters.component_id }}
         targetPath: ./tenant-gitops          
@@ -112,7 +112,7 @@ spec:
       name: Open PR to System
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split(":")[1] }}-gitops&owner=janus-api-idp
+        repoUrl: github.com?repo=${{ parameters.application.split(":")[1] }}-gitops&owner=contract-first-id[
         branchName: ${{ parameters.component_id }}
         title: argocd apps for ${{ parameters.component_id }}
         description: argocd apps ${{ parameters.component_id }}

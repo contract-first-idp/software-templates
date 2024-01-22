@@ -1,12 +1,12 @@
 apiVersion: backstage.io/v1alpha1
 kind: Location
 metadata:
-  name: janus-api-idp-collection
+  name: contract-first-id[-collection
   description: A collection of Backstage Golden Path Templates
 spec:
   type: url
   targets:
-    - https://github.com/janus-api-idp/software-templates/blob/main/templates/system/template.yaml
-    - https://github.com/janus-api-idp/software-templates/blob/main/templates/api-specification/template.yaml
-    - https://github.com/janus-api-idp/software-templates/blob/main/templates/spring-boot-api-consumer/template.yaml
-    - https://github.com/janus-api-idp/software-templates/blob/main/templates/spring-boot-api-producer/template.yaml
+    - https://github.com/contract-first-id[/software-templates/blob/main/templates/system/template.yaml
+    - https://github.com/contract-first-id[/software-templates/blob/main/templates/api-specification/template.yaml
+    - https://github.com/contract-first-id[/software-templates/blob/main/templates/spring-boot-api-consumer/template.yaml
+    - https://github.com/contract-first-id[/software-templates/blob/main/templates/spring-boot-api-producer/template.yaml

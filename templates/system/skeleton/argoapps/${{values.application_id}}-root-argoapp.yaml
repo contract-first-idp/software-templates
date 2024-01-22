@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/janus-api-idp/${{values.application_id}}-gitops.git
+    repoURL: https://github.com/contract-first-id[/${{values.application_id}}-gitops.git
     path: "."
     directory:
       include: "*.yaml"

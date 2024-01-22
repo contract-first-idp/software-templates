@@ -46,7 +46,7 @@
                             <library>spring-boot</library>
                             <output>${project.basedir}/target/generated-sources</output>
                             <inputSpec>
-                                https://raw.githubusercontent.com/janus-api-idp/${{ values.api_id }}/master/specification.yaml
+                                https://raw.githubusercontent.com/contract-first-id[/${{ values.api_id }}/master/specification.yaml
                             </inputSpec>
 
                             <configOptions>
