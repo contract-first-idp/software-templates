@@ -52,7 +52,7 @@ spec:
           api_id: ${{ parameters.api_id }}
           description: ${{ parameters.description }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/contract-first-id[/${{ parameters.api_id }}
+          destination: https://github.com/contract-first-idp[/${{ parameters.api_id }}
           application: ${{ parameters.application }}
 
     - id: publish
@@ -61,10 +61,10 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.api_id }}
-        repoUrl: github.com?repo=${{ parameters.api_id }}&owner=contract-first-id[
+        repoUrl: github.com?repo=${{ parameters.api_id }}&owner=contract-first-idp[
         repoVisibility: public
         deleteBranchOnMerge: true
-        #access: contract-first-id[/${{ parameters.owner }}
+        #access: contract-first-idp[/${{ parameters.owner }}
         protectDefaultBranch: false
 
     - id: template-tenant-gitops 
@@ -82,7 +82,7 @@ spec:
       name: Open PR to System
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-gitops&owner=contract-first-id[
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-gitops&owner=contract-first-idp[
         branchName: ${{ parameters.api_id }}
         title: argocd apps for ${{ parameters.api_id }}
         description: argocd apps ${{ parameters.api_id}}
