@@ -5,5 +5,6 @@ info:
     ${{ values.description }}
   version: 0.0.1
 servers:
-  - url: "https://microcks-microcks.apps.cluster-7s4kl.dynamic.redhatworkshops.io/rest/${{ values.api_id }}/0.0.1"
+  - url: "http://localhost:8080"
+  - url: "https://microcks-microcks.apps.cluster-65qcl.dynamic.redhatworkshops.io/rest/${{ values.api_id }}/0.0.1"
 paths: {}

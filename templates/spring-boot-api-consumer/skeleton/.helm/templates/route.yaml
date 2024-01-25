@@ -8,3 +8,6 @@ spec:
   to:
     kind: Service
     name: {{ .Release.Name }}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

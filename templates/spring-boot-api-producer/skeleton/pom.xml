@@ -61,7 +61,7 @@
                                 <apiPackage>com.redhat.employee.api</apiPackage>
                                 <documentationProvider>none</documentationProvider>
                                 <useSpringController>true</useSpringController>
-                                <interfaceOnly>true</interfaceOnly>
+                                <interfaceOnly>false</interfaceOnly>
                             </configOptions>
                         </configuration>
                     </execution>
