@@ -16,6 +16,7 @@ spec:
         - java_package_name
         - application
         - description
+        - api
       properties:
         component_id:
           title: Name
@@ -112,7 +113,7 @@ spec:
       name: Open PR to System
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split(":")[1] }}-gitops&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-gitops&owner=contract-first-idp
         branchName: ${{ parameters.component_id }}
         title: argocd apps for ${{ parameters.component_id }}
         description: argocd apps ${{ parameters.component_id }}
