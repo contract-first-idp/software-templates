@@ -56,9 +56,9 @@
                                 <version>${project.version}</version>
                                 <dateLibrary>java8</dateLibrary>
                                 <sourceFolder>src/main/java</sourceFolder>
-                                <basePackage>com.redhat.employee</basePackage>
-                                <modelPackage>com.redhat.employee.model</modelPackage>
-                                <apiPackage>com.redhat.employee.api</apiPackage>
+                                <basePackage>${{ values.java_package_name }}</basePackage>
+                                <modelPackage>${{ values.java_package_name }}.model</modelPackage>
+                                <apiPackage>${{ values.java_package_name }}.api</apiPackage>
                                 <documentationProvider>none</documentationProvider>
                                 <useSpringController>true</useSpringController>
                                 <interfaceOnly>false</interfaceOnly>
