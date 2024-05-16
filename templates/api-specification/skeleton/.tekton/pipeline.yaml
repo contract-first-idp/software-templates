@@ -12,7 +12,7 @@ spec:
   - default: master
     name: gitRevision
     type: string
-  - default: image-registry.openshift-image-registry.svc:5000/openshift/spectral:latest
+  - default: "stoplight/spectral:6.11.1"
     name: spectral-image
     type: string
   - default: https://raw.githubusercontent.com/contract-first-idp/spectral-rules/main/ruleset.yaml
