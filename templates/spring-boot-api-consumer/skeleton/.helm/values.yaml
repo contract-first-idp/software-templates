@@ -1,8 +1,4 @@
-global:
-  # Ingress base domain
-  clusterRouterBase: apps.cluster-7s4kl.dynamic.redhatworkshops.io
-
-# Define the Docker image repository and tag for your Java application.
+# Define the image repository and tag for your Java application.
 image:
   repository: quay.io/maximilianb/hqoas-spring-demo
   tag: latest

@@ -40,6 +40,11 @@ spec:
           ui:options:
             allowedKinds:
             - System
+        mock_provider_url:
+          title: Mock Provider URL
+          type: string
+          description: Microcks Host
+          default: https://microcks-microcks.apps.cluster-n7s8n.dynamic.redhatworkshops.io
 
   steps:
     - id: template
