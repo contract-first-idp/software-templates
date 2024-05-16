@@ -56,6 +56,7 @@ spec:
         values:
           api_id: ${{ parameters.api_id }}
           description: ${{ parameters.description }}
+          mock_provider_url: ${{ parameters.mock_provider_url }}
           owner: ${{ parameters.owner }}
           destination: https://github.com/contract-first-idp/${{ parameters.api_id }}
           application: ${{ parameters.application }}
