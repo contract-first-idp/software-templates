@@ -1,0 +1,11 @@
+- restConfiguration:
+    apiContextPath: /api-doc
+    #bindingMode: json
+    #bindingPackageScan: com.redhat.model
+
+- rest:
+    id: rest-openapi
+    openApi:
+      id: openapi-configuration
+      specification: https://raw.githubusercontent.com/contract-first-idp/${{ values.api_id }}/master/specification.yaml
+      missingOperation: ignore
