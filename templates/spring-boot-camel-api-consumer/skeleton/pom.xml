@@ -101,7 +101,7 @@
                             <library>spring-boot</library>
                             <output>${project.basedir}/target/generated-sources</output>
                             <inputSpec>
-                                https://raw.githubusercontent.com/contract-first-idp/${{ values.api_id }}/master/specification.yaml
+                                https://raw.githubusercontent.com/contract-first-idp/${{values.application.split("/")[1]}}-${{ values.api_id }}-api/main/specification.yaml
                             </inputSpec>
 
                             <configOptions>
@@ -111,9 +111,9 @@
                                 <version>${project.version}</version>
                                 <dateLibrary>java11</dateLibrary>
                                 <sourceFolder>src/main/java</sourceFolder>
-                                <basePackage>com.redhat.employee</basePackage>
-                                <modelPackage>com.redhat.employee.model</modelPackage>
-                                <apiPackage>com.redhat.employee.api</apiPackage>
+                                <basePackage>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}</basePackage>
+                                <modelPackage>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.model</modelPackage>
+                                <apiPackage>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.api</apiPackage>
                                 <documentationProvider>none</documentationProvider>
                                 <useSpringController>false</useSpringController>
                                 <interfaceOnly>true</interfaceOnly>

@@ -44,11 +44,11 @@ spec:
           title: Mock Provider URL
           type: string
           description: Microcks Host
-          default: https://microcks-microcks.apps.cluster-n7s8n.dynamic.redhatworkshops.io
+          default: https://microcks-microcks.apps.cluster-example.com
 
   steps:
     - id: template
-      name: Render API Template
+      name: render API specification
       action: fetch:template
       input:
         url: ./skeleton
@@ -58,38 +58,38 @@ spec:
           description: ${{ parameters.description }}
           mock_provider_url: ${{ parameters.mock_provider_url }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/contract-first-idp/${{ parameters.api_id }}
+          destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api
           application: ${{ parameters.application }}
 
     - id: publish
-      name: Publish API Repository
+      name: publish API specification repository
       action: publish:github
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.api_id }}
-        repoUrl: github.com?repo=${{ parameters.api_id }}&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api&owner=contract-first-idp
         repoVisibility: public
+        defaultBranch: main
         deleteBranchOnMerge: true
-        #access: contract-first-idp/${{ parameters.owner }}
         protectDefaultBranch: false
 
-    - id: template-tenant-gitops 
-      name: Render GitOps Template
+    - id: template-system-pull-request
+      name: render system pull request
       action: fetch:template
       input:
-        url: ./app-gitops
+        url: ./system
         copyWithoutRender: []
         values:
           api_id: ${{ parameters.api_id }}
           application: ${{ parameters.application }}
-        targetPath: ./tenant-gitops
+        targetPath: ./system-gitops
 
-    - id: pull-request
-      name: Open PR to System
+    - id: pull-request-to-system
+      name: open system pull request
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-gitops&owner=contract-first-idp
-        branchName: ${{ parameters.api_id }}
-        title: argocd apps for ${{ parameters.api_id }}
-        description: argocd apps ${{ parameters.api_id}}
-        sourcePath: ./tenant-gitops
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp
+        branchName: ${{ parameters.api_id }}-api
+        title: add ${{ parameters.api_id }} API
+        description: add ${{ parameters.api_id}} API
+        sourcePath: ./system-gitops

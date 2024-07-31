@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: system-template
   title: System Template
-  description: Create a System to contain a set of application Components
+  description: Create a System to contain a set of application Components, APIs, and Resources
 spec:
   owner: service@example.com
   type: system
@@ -33,8 +33,9 @@ spec:
               - Group
 
   steps:
-    - id: template-namespaces 
-      name: Render System Onboarding Template
+
+    - id: template-system
+      name: render system mainfiest
       action: fetch:template
       input:
         url: ./skeleton
@@ -44,33 +45,36 @@ spec:
           description: ${{ parameters.description }}
           owner: ${{ parameters.owner }}
 
-    - id: pull-request
-      name: Open PR to Demo Systems
-      action: publish:github:pull-request
-      input:
-        repoUrl: github.com?repo=demo-systems&owner=contract-first-idp
-        branchName: ${{ parameters.application_id }}
-        title: namespaces for ${{ parameters.application_id }}
-        description: namespaces for ${{ parameters.application_id }}
-
-    - id: template-gitops
-      name: Render System GitOps Template
-      action: fetch:template
-      input:
-        url: ./app-gitops
-        copyWithoutRender: []
-        values: {}
-        targetPath: ./app-gitops
-
-    - id: publish
-      name: Publish System GitOps Repository
+    - id: publish-system
+      name: publish system manifest repository
       action: publish:github
       input:
         allowedHosts: ['github.com']
-        description: This is ${{ parameters.application_id }}
-        repoUrl: github.com?repo=${{ parameters.application_id }}-gitops&owner=contract-first-idp
+        description: GitOps manifest for ${{ parameters.application_id }}
+        repoUrl: github.com?repo=${{ parameters.application_id }}-system&owner=contract-first-idp
         repoVisibility: public
-        sourcePath: ./app-gitops
+        defaultBranch: main
         deleteBranchOnMerge: true
-        #access: contract-first-idp/${{ parameters.owner }}
         protectDefaultBranch: false
+
+    - id: template-domain-pull-request
+      name: render domain pull request
+      action: fetch:template
+      input:
+        url: ./domain
+        copyWithoutRender: []
+        values:
+          application_id: ${{ parameters.application_id }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+        targetPath: ./domain-gitops  
+
+    - id: pull-request-to-domain
+      name: open domain pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?repo=demo-domain&owner=contract-first-idp
+        branchName: ${{ parameters.application_id }}
+        title: add ${{ parameters.application_id }} system
+        description: add ${{ parameters.application_id }} system
+        sourcePath: ./domain-gitops
