@@ -1,0 +1,128 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: spring-boot-api-producer-template
+  title: A Camel Spring Boot REST server
+  description: Create a simple API first microservice using Camel Spring Boot
+spec:
+  owner: service@example.com
+  type: service
+  
+  parameters:
+    - title: API server parameters
+      required:
+        - component_id
+        - owner
+        - java_package_name
+        - application
+        - description
+        - api
+      properties:
+        component_id:
+          title: Name
+          type: string
+          description: Unique name of the component
+        java_package_name:
+          title: Java Package Name
+          type: string
+          description: Name for the java package. eg (io.backstage.blah)
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this component does
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds: 
+              - Group
+        application:
+          title: System
+          type: string
+          description: System to which this Component belongs
+          ui:field: OwnedEntityPicker
+          ui:options:
+            allowedKinds:
+            - System
+        api:
+          title: API
+          type: string
+          description: The API being implemented
+          ui:field: OwnedEntityPicker
+          ui:options:
+            allowedKinds:
+            - API
+
+  steps:
+    - id: template
+      name: Render Component Template
+      action: fetch:template
+      input:
+        url: ./skeleton
+        copyWithoutRender: []
+        values:
+          component_id: ${{ parameters.component_id }}
+          description: ${{ parameters.description }}
+          artifact_id: ${{ parameters.component_id }}
+          java_package_name: ${{ parameters.java_package_name }}
+          owner: ${{ parameters.owner }}
+          destination: https://github.com/contract-first-idp/${{ parameters.component_id }}
+          application: ${{ parameters.application }}
+          api_id: ${{ parameters.api.split("/")[1] }}
+
+    - id: publish
+      name: Publish Component Repository
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.component_id }}
+        repoUrl: github.com?repo=${{ parameters.component_id }}&owner=contract-first-idp
+        repoVisibility: public
+        deleteBranchOnMerge: true
+        #access: contract-first-idp/${{ parameters.owner }}
+        protectDefaultBranch: false
+
+    - id: register
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: '${{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
+
+    - id: template-tenant-gitops 
+      name: Render GitOps Template
+      action: fetch:template
+      input:
+        url: ./app-gitops
+        copyWithoutRender: []
+        values:
+          component_id: ${{ parameters.component_id }}
+          description: ${{ parameters.description }}
+          artifact_id: ${{ parameters.component_id }}
+          java_package_name: ${{ parameters.java_package_name }}
+          owner: ${{ parameters.owner }}
+          application: ${{ parameters.application }}
+          organization: contract-first-idp
+          team: ${{ parameters.owner }}
+          repo_id: ${{ parameters.component_id }}
+        targetPath: ./tenant-gitops
+
+    - id: pull-request
+      name: Open PR to System
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-gitops&owner=contract-first-idp
+        branchName: ${{ parameters.component_id }}
+        title: argocd apps for ${{ parameters.component_id }}
+        description: argocd apps ${{ parameters.component_id }}
+        sourcePath: ./tenant-gitops
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
