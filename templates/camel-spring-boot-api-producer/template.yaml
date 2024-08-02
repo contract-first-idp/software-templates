@@ -2,8 +2,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: spring-boot-api-producer-template
-  title: Spring Boot REST server
-  description: Create a simple RESTful microservice using Spring Boot
+  title: A Camel Spring Boot REST server
+  description: Create a simple API first microservice using Camel Spring Boot
 spec:
   owner: service@example.com
   type: service
