@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/contract-first-idp/${{values.application_id}}-gitops.git
+    repoURL: https://github.com/rohat-access/${{values.application_id}}-gitops.git
     path: "."
     directory:
       include: "*.yaml"

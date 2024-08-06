@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/contract-first-idp/${{ values.api_id }}
+    repoURL: https://github.com/rohat-access/${{ values.api_id }}
     targetRevision: HEAD
     path: .tekton
   destination:

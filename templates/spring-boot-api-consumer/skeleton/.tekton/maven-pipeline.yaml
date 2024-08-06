@@ -12,7 +12,7 @@ spec:
       name: dockerfilePath
       type: string
       description: Path containing the Dockerfile for the final image
-    - default: https://github.com/contract-first-idp/${{ values.component_id }}
+    - default: https://github.com/rohat-access/${{ values.component_id }}
       name: git-url
       type: string
       description: "Upstream Source Repository Url"
