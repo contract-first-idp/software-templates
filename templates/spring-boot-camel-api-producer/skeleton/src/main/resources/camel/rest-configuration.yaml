@@ -1,7 +1,7 @@
 - restConfiguration:
     apiContextPath: /api-doc
     #bindingMode: json
-    #bindingPackageScan: com.redhat.model
+    #bindingPackageScan: ${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.model
 
 - rest:
     id: rest-openapi

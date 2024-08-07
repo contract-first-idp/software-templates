@@ -1,4 +1,4 @@
-package com.redhat.employee;
+package ${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }};
 
 import com.fasterxml.jackson.databind.Module;
 import org.openapitools.jackson.nullable.JsonNullableModule;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGe
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 @ComponentScan(
-    basePackages = {"com.redhat.employee", "com.redhat.employee.api" , "com.redhat.employee.config"},
+    basePackages = {"${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}", "${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.api" , "${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.config"},
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 public class Application {
@@ -22,7 +22,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    @Bean(name = "com.redhat.employee.Application.jsonNullableModule")
+    @Bean(name = "${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.Application.jsonNullableModule")
     public Module jsonNullableModule() {
         return new JsonNullableModule();
     }
