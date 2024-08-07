@@ -157,7 +157,7 @@
               <configuration>
                 <language>spring</language>
                 <library>spring-boot3</library>
-                <inputSpec>https://raw.githubusercontent.com/rohat-access/${{ values.api_id }}/master/specification.yaml</inputSpec>
+                <inputSpec>https://raw.githubusercontent.com/contract-first-idp/${{ values.api_id }}/master/specification.yaml</inputSpec>
                 <modelPackage>com.redhat.model</modelPackage>
                 <generateApis>false</generateApis>
                 <generateApiDocumentation>false</generateApiDocumentation>
