@@ -13,6 +13,8 @@ spec:
       required:
         - component_id
         - owner
+        - java_package_domain
+        - java_group_name
         - java_package_name
         - application
         - description
@@ -22,10 +24,18 @@ spec:
           title: Name
           type: string
           description: Unique name of the component
+        java_package_domain:
+          title: Package Domain
+          type: string
+          description: Name for the Package Domain. eg (io in io.backstage.package)
+        java_group_name:
+          title: Group Name
+          type: string
+          description: Name for the group. eg (backstage in io.backstage.package)
         java_package_name:
           title: Java Package Name
           type: string
-          description: Name for the java package. eg (io.backstage.blah)
+          description: Name for the java package. eg (package in io.backstage.package)
         description:
           title: Description
           type: string
