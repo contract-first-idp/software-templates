@@ -13,8 +13,6 @@ spec:
       required:
         - component_id
         - owner
-        - java_package_domain
-        - java_group_name
         - java_package_name
         - application
         - description
@@ -24,14 +22,6 @@ spec:
           title: Name
           type: string
           description: Unique name of the component
-        java_package_domain:
-          title: Package Domain
-          type: string
-          description: Name for the Package Domain. eg (io in io.backstage.package)
-        java_group_name:
-          title: Group Name
-          type: string
-          description: Name for the group. eg (backstage in io.backstage.package)
         java_package_name:
           title: Java Package Name
           type: string
@@ -76,8 +66,6 @@ spec:
           component_id: ${{ parameters.component_id }}
           description: ${{ parameters.description }}
           artifact_id: ${{ parameters.component_id }}
-          java_package_domain: ${{ parameters.java_package_domain }}
-          java_group_name: ${{ parameters.java_group_name }}
           java_package_name: ${{ parameters.java_package_name }}
           owner: ${{ parameters.owner }}
           destination: https://github.com/contract-first-idp/${{ parameters.component_id }}
