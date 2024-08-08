@@ -1,4 +1,4 @@
-package com.redhat.employee;
+package ${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }};
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
