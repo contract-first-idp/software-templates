@@ -6,7 +6,7 @@ spec:
   description: | 
     This pipeline runs a Spectral linter against an API specification and publishes to Microcks
   params:
-  - default: https://github.com/contract-first-idp-qa/${{ values.api_id }}
+  - default: https://github.com/contract-first-idp-qa-qa/${{ values.api_id }}
     name: repo-url
     type: string
   - default: master
@@ -15,7 +15,7 @@ spec:
   - default: "stoplight/spectral:6.11.1"
     name: spectral-image
     type: string
-  - default: https://raw.githubusercontent.com/contract-first-idp-qa/spectral-rules/main/ruleset.yaml
+  - default: https://raw.githubusercontent.com/contract-first-idp-qa-qa/spectral-rules/main/ruleset.yaml
     name: rules-path
     type: string
   - default: ./specification.yaml

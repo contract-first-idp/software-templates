@@ -48,7 +48,7 @@ spec:
       name: Open PR to Demo Systems
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=demo-systems&owner=contract-first-idp
+        repoUrl: github.com?repo=demo-systems&owner=contract-first-idp-qa
         branchName: ${{ parameters.application_id }}
         title: namespaces for ${{ parameters.application_id }}
         description: namespaces for ${{ parameters.application_id }}
@@ -68,9 +68,9 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.application_id }}
-        repoUrl: github.com?repo=${{ parameters.application_id }}-gitops&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application_id }}-gitops&owner=contract-first-idp-qa
         repoVisibility: public
         sourcePath: ./app-gitops
         deleteBranchOnMerge: true
-        #access: contract-first-idp/${{ parameters.owner }}
+        #access: contract-first-idp-qa/${{ parameters.owner }}
         protectDefaultBranch: false
