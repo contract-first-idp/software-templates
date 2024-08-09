@@ -90,6 +90,6 @@ spec:
       input:
         repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp-qa
         branchName: ${{ parameters.api_id }}
-        title: add ${{ parameters.api_id }} component
-        description: add ${{ parameters.api_id}} component
+        title: add ${{ parameters.api_id }} API
+        description: add ${{ parameters.api_id}} API
         sourcePath: ./system-gitops
