@@ -9,7 +9,7 @@ spec:
   - default: https://github.com/contract-first-idp-qa-qa/${{ values.api_id }}
     name: repo-url
     type: string
-  - default: master
+  - default: main
     name: gitRevision
     type: string
   - default: "stoplight/spectral:6.11.1"

@@ -92,8 +92,8 @@ spec:
         description: This is ${{ parameters.component_id }}
         repoUrl: github.com?repo=${{ parameters.component_id }}&owner=contract-first-idp-qa
         repoVisibility: public
+        defaultBranch: main
         deleteBranchOnMerge: true
-        #access: contract-first-idp-qa/${{ parameters.owner }}
         protectDefaultBranch: false
 
     - id: register

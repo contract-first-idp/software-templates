@@ -16,7 +16,7 @@ spec:
       name: git-url
       type: string
       description: "Upstream Source Repository Url"
-    - default: master
+    - default: main
       name: git-revision
       type: string
       description: "Upstream source code revision to pull"

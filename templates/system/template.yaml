@@ -45,7 +45,7 @@ spec:
           owner: ${{ parameters.owner }}
 
     - id: pull-request
-      name: Open PR to Demo Systems
+      name: Open PR to Domain GitOps manifest
       action: publish:github:pull-request
       input:
         repoUrl: github.com?repo=demo-domain&owner=contract-first-idp-qa
@@ -54,7 +54,7 @@ spec:
         description: namespaces for ${{ parameters.application_id }}
 
     - id: template-gitops
-      name: Render System GitOps Template
+      name: Render System GitOps template
       action: fetch:template
       input:
         url: ./app-gitops
@@ -63,14 +63,14 @@ spec:
         targetPath: ./app-gitops
 
     - id: publish
-      name: Publish System GitOps Repository
+      name: Publish System GitOps repository
       action: publish:github
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.application_id }}
-        repoUrl: github.com?repo=${{ parameters.application_id }}-gitops&owner=contract-first-idp-qa
+        repoUrl: github.com?repo=${{ parameters.application_id }}-system&owner=contract-first-idp-qa
         repoVisibility: public
         sourcePath: ./app-gitops
+        defaultBranch: main
         deleteBranchOnMerge: true
-        #access: contract-first-idp-qa/${{ parameters.owner }}
         protectDefaultBranch: false
