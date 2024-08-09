@@ -7,5 +7,5 @@
     id: rest-openapi
     openApi:
       id: openapi-configuration
-      specification: https://raw.githubusercontent.com/contract-first-idp/${{ values.api_id }}/master/specification.yaml
+      specification: https://raw.githubusercontent.com/contract-first-idp-qa/${{ values.api_id }}/master/specification.yaml
       missingOperation: ignore

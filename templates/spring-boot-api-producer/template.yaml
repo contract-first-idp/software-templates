@@ -68,7 +68,7 @@ spec:
           artifact_id: ${{ parameters.component_id }}
           java_package_name: ${{ parameters.java_package_name }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/contract-first-idp/${{ parameters.component_id }}
+          destination: https://github.com/contract-first-idp-qa/${{ parameters.component_id }}
           application: ${{ parameters.application }}
           api_id: ${{ parameters.api.split("/")[1] }}
 
