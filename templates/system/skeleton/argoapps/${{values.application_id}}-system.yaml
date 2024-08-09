@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ${{values.application_id}}-root-application
+  name: ${{values.application_id}}-system
   namespace: openshift-gitops
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: https://github.com/contract-first-idp-qa/${{values.application_id}}-gitops.git
+    repoURL: https://github.com/contract-first-idp-qa/${{values.application_id}}-system.git
     path: "."
     directory:
       include: "*.yaml"
