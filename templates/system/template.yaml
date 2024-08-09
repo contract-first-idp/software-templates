@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: system-template
   title: System Template
-  description: Create a System to contain a set of application Components
+  description: Create a System to contain a set of application Components, APIs, and Resources
 spec:
   owner: service@example.com
   type: system
@@ -33,44 +33,45 @@ spec:
               - Group
 
   steps:
-    - id: template-namespaces 
-      name: Render System Onboarding Template
+
+    - id: template-system
+      name: render system mainfiest
       action: fetch:template
       input:
         url: ./skeleton
+        copyWithoutRender: []
+        values: {}
+
+    - id: publish-system
+      name: publish system manifest repository
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: GitOps manifest for ${{ parameters.application_id }}
+        repoUrl: github.com?repo=${{ parameters.application_id }}-system&owner=contract-first-idp-qa
+        repoVisibility: public
+        sourcePath: ./skeleton
+        defaultBranch: main
+        deleteBranchOnMerge: true
+        protectDefaultBranch: false
+
+    - id: template-domain-pull-request
+      name: render domain pull request
+      action: fetch:template
+      input:
+        url: ./domain
         copyWithoutRender: []
         values:
           application_id: ${{ parameters.application_id }}
           description: ${{ parameters.description }}
           owner: ${{ parameters.owner }}
+        targetPath: ./domain-gitops  
 
-    - id: pull-request
-      name: Open PR to Domain GitOps manifest
+    - id: pull-request-to-domain
+      name: open domain pull request
       action: publish:github:pull-request
       input:
         repoUrl: github.com?repo=demo-domain&owner=contract-first-idp-qa
         branchName: ${{ parameters.application_id }}
-        title: namespaces for ${{ parameters.application_id }}
-        description: namespaces for ${{ parameters.application_id }}
-
-    - id: template-gitops
-      name: Render System GitOps template
-      action: fetch:template
-      input:
-        url: ./app-gitops
-        copyWithoutRender: []
-        values: {}
-        targetPath: ./app-gitops
-
-    - id: publish
-      name: Publish System GitOps repository
-      action: publish:github
-      input:
-        allowedHosts: ['github.com']
-        description: This is ${{ parameters.application_id }}
-        repoUrl: github.com?repo=${{ parameters.application_id }}-system&owner=contract-first-idp-qa
-        repoVisibility: public
-        sourcePath: ./app-gitops
-        defaultBranch: main
-        deleteBranchOnMerge: true
-        protectDefaultBranch: false
+        title: add ${{ parameters.application_id }} system
+        description: add ${{ parameters.application_id }} system
