@@ -75,3 +75,4 @@ spec:
         branchName: ${{ parameters.application_id }}
         title: add ${{ parameters.application_id }} system
         description: add ${{ parameters.application_id }} system
+        sourcePath: ./domain-gitops
