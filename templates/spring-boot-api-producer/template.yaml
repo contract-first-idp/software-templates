@@ -113,7 +113,7 @@ spec:
       name: Open PR to System
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-gitops&owner=contract-first-idp-qa
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp-qa
         branchName: ${{ parameters.component_id }}
         title: argocd apps for ${{ parameters.component_id }}
         description: argocd apps ${{ parameters.component_id }}
