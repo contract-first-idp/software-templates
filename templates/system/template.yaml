@@ -48,7 +48,7 @@ spec:
       name: Open PR to Demo Systems
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=demo-systems&owner=contract-first-idp-qa
+        repoUrl: github.com?repo=demo-domain&owner=contract-first-idp-qa
         branchName: ${{ parameters.application_id }}
         title: namespaces for ${{ parameters.application_id }}
         description: namespaces for ${{ parameters.application_id }}
