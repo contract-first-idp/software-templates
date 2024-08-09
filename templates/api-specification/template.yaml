@@ -89,7 +89,7 @@ spec:
       action: publish:github:pull-request
       input:
         repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp-qa
-        branchName: ${{ parameters.api_id }}
+        branchName: ${{ parameters.api_id }}-api
         title: add ${{ parameters.api_id }} API
         description: add ${{ parameters.api_id}} API
         sourcePath: ./system-gitops

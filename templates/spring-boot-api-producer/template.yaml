@@ -114,9 +114,9 @@ spec:
       action: publish:github:pull-request
       input:
         repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp-qa
-        branchName: ${{ parameters.component_id }}
-        title: argocd apps for ${{ parameters.component_id }}
-        description: argocd apps ${{ parameters.component_id }}
+        branchName: ${{ parameters.component_id }}-component
+        title: add ${{ parameters.component_id }} component
+        description: add ${{ parameters.component_id }} component
         sourcePath: ./system-gitops
 
   output:
