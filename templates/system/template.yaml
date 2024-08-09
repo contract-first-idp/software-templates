@@ -40,7 +40,10 @@ spec:
       input:
         url: ./skeleton
         copyWithoutRender: []
-        values: {}
+        values:
+          application_id: ${{ parameters.application_id }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
 
     - id: publish-system
       name: publish system manifest repository
@@ -50,7 +53,6 @@ spec:
         description: GitOps manifest for ${{ parameters.application_id }}
         repoUrl: github.com?repo=${{ parameters.application_id }}-system&owner=contract-first-idp-qa
         repoVisibility: public
-        sourcePath: ./skeleton
         defaultBranch: main
         deleteBranchOnMerge: true
         protectDefaultBranch: false
