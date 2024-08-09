@@ -1,0 +1,6 @@
+system: ${{values.application.split("/")[1]}}
+component: ${{ values.component_id }}
+environment: qa
+
+image:
+  tag: latest

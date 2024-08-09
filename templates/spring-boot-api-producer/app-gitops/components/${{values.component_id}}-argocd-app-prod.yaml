@@ -8,14 +8,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/contract-first-idp/${{ values.component_id }}
+    repoURL: https://github.com/contract-first-idp/developer-charts
     targetRevision: HEAD
-    path: .helm
+    path: spring-boot-application
     helm:
-      values: | 
-        image: 
-          repository: image-registry.openshift-image-registry.svc:5000/${{values.application.split("/")[1]}}-prod/${{ values.component_id }}
-          tag: latest
+      valueFiles:
+        - values-${{ values.component_id }}-prod.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: ${{values.application.split("/")[1]}}-prod

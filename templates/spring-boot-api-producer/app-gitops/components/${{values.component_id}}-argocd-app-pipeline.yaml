@@ -8,9 +8,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/contract-first-idp/${{ values.component_id }}
+    repoURL: https://github.com/contract-first-idp/developer-charts
     targetRevision: HEAD
-    path: .tekton
+    path: spring-boot-pipeline
+    helm:
+      valueFiles:
+        - values-${{ values.component_id }}-pipeline.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: ${{values.application.split("/")[1]}}-build
