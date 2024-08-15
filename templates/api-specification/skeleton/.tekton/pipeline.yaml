@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: ${{ values.api_id }}-api-pipeline
+  name: ${{ values.api_id }}-api
 spec:
   description: | 
     This pipeline runs a Spectral linter against an API specification and publishes to Microcks
