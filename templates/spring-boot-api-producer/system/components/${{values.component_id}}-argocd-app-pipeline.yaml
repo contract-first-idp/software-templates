@@ -12,8 +12,10 @@ spec:
     targetRevision: HEAD
     path: spring-boot-pipeline
     helm:
-      valueFiles:
-        - values-${{ values.component_id }}-pipeline.yaml
+      values: |
+        domain: contract-first-idp-qa
+        system: ${{values.application.split("/")[1]}}
+        component: ${{ values.component_id }}
   destination:
     server: https://kubernetes.default.svc
     namespace: ${{values.application.split("/")[1]}}-build

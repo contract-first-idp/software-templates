@@ -12,8 +12,12 @@ spec:
     targetRevision: HEAD
     path: spring-boot-application
     helm:
-      valueFiles:
-        - values-${{ values.component_id }}-prod.yaml
+      values: |
+        system: ${{values.application.split("/")[1]}}
+        component: ${{ values.component_id }}
+        environment: prod
+        image:
+          tag: latest
   destination:
     server: https://kubernetes.default.svc
     namespace: ${{values.application.split("/")[1]}}-prod
