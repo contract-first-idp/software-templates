@@ -1,15 +1,15 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: ${{ values.api_id }}-api-pipeline
+  name: ${{ values.api_id }}-api
 spec:
   description: | 
     This pipeline runs a Spectral linter against an API specification and publishes to Microcks
   params:
-  - default: https://github.com/contract-first-idp/${{ values.api_id }}
+  - default: https://github.com/contract-first-idp/${{values.application.split("/")[1]}}-${{ values.api_id }}-api
     name: repo-url
     type: string
-  - default: master
+  - default: main
     name: gitRevision
     type: string
   - default: "stoplight/spectral:6.11.1"
