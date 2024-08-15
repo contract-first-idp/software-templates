@@ -157,7 +157,7 @@
               <configuration>
                 <language>spring</language>
                 <library>spring-boot3</library>
-                <inputSpec>https://raw.githubusercontent.com/contract-first-idp-qa/${{ values.api_id }}/main/specification.yaml</inputSpec>
+                <inputSpec>https://raw.githubusercontent.com/contract-first-idp/${{ values.api_id }}/main/specification.yaml</inputSpec>
                 <modelPackage>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.model</modelPackage>
                 <generateApis>false</generateApis>
                 <generateApiDocumentation>false</generateApiDocumentation>
