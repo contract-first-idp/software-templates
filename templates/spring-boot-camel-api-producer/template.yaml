@@ -77,6 +77,7 @@ spec:
           description: ${{ parameters.description }}
           artifact_id: ${{ parameters.component_id }}
           java_package_domain: ${{ parameters.java_package_domain }}
+          folder_package_domain: ${{ parameters.java_package_domain | replace('.', '/') }}
           java_group_name: ${{ paramaters.java_group_name }}
           java_package_name: ${{ parameters.java_package_name }}
           owner: ${{ parameters.owner }}
