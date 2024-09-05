@@ -6,15 +6,14 @@
     <name>${{ values.component_id }}</name>
     <version>1.0.0</version>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <springfox-version>2.8.0</springfox-version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.6</version>
+        <version>3.3.3</version>
     </parent>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
@@ -34,7 +33,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>7.0.1</version>
+                <version>7.8.0</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -50,7 +49,6 @@
                             </inputSpec>
 
                             <configOptions>
-                                <serializableModel>true</serializableModel>
                                 <artifactId>${project.artifactId}</artifactId>
                                 <groupId>${project.groupId}</groupId>
                                 <version>${project.version}</version>
@@ -75,14 +73,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
-        </dependency>
-        <!-- @Nullable annotation -->
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -91,11 +87,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openapitools</groupId>
-            <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.6</version>
         </dependency>
         <!-- Bean Validation API support -->
         <dependency>

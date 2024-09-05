@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/openjdk-17-runtime:1.19
+FROM registry.access.redhat.com/ubi9/openjdk-17:latest
 
 ENV LANGUAGE='en_US:en'
 
