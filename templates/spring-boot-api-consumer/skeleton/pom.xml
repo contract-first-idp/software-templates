@@ -54,9 +54,9 @@
                                 <version>${project.version}</version>
                                 <dateLibrary>java8</dateLibrary>
                                 <sourceFolder>src/main/java</sourceFolder>
-                                <basePackage>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}</basePackage>
-                                <modelPackage>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.model</modelPackage>
-                                <apiPackage>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.api</apiPackage>
+                                <basePackage>${{ values.java_package_name }}</basePackage>
+                                <modelPackage>${{ values.java_package_name }}.model</modelPackage>
+                                <apiPackage>${{ values.java_package_name }}.api</apiPackage>
                                 <documentationProvider>none</documentationProvider>
                                 <useSpringController>true</useSpringController>
                                 <interfaceOnly>true</interfaceOnly>
