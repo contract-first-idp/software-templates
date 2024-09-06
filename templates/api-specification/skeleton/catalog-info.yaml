@@ -5,7 +5,7 @@ metadata:
   title: ${{values.api_id | dump}}
   description: ${{values.description | dump}}
   annotations:
-    backstage.io/spectral-ruleset-url: https://raw.githubusercontent.com/contract-first-idp/spectral-rules/main/ruleset.yaml
+    backstage.io/spectral-ruleset-url: https://raw.githubusercontent.com/croway/spectral-rules/main/ruleset.yaml
 spec:
   type: openapi
   system: ${{values.application}}

@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/contract-first-idp/${{values.application.split("/")[1]}}-${{ values.api_id }}-api
+    repoURL: https://github.com/croway/${{values.application.split("/")[1]}}-${{ values.api_id }}-api
     targetRevision: HEAD
     path: .tekton
   destination:
