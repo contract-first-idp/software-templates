@@ -13,9 +13,8 @@ spec:
       required:
         - component_id
         - owner
-        - java_package_domain
-        - java_group_name
-        - java_package_name
+        - java_group_id
+        - java_package
         - application
         - description
         - api
@@ -24,18 +23,14 @@ spec:
           title: Name
           type: string
           description: Unique name of the component
-        java_package_domain:
-          title: Package Domain
-          type: string
-          description: Name for the Package Domain. eg (io in io.backstage.package)
-        java_group_name:
+        java_group_id:
           title: Group Name
           type: string
-          description: Name for the group. eg (backstage in io.backstage.package)
-        java_package_name:
+          description: Name for the group id, eg. (backstage in my.group)
+        java_package:
           title: Java Package Name
           type: string
-          description: Name for the java package. eg (package in io.backstage.package)
+          description: Name for the java package. eg (package in my.package.name)
         description:
           title: Description
           type: string
@@ -76,10 +71,9 @@ spec:
           component_id: ${{ parameters.component_id }}
           description: ${{ parameters.description }}
           artifact_id: ${{ parameters.component_id }}
-          java_package_domain: ${{ parameters.java_package_domain }}
-          folder_package_domain: ${{ parameters.java_package_domain | replace('.', '/') }}
-          java_group_name: ${{ paramaters.java_group_name }}
-          java_package_name: ${{ parameters.java_package_name }}
+          folder_java_package: ${{ parameters.java_package | replace('.', '/') }}
+          java_group_id: ${{ paramaters.java_group_id }}
+          java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
           destination: https://github.com/croway/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
           application: ${{ parameters.application }}
@@ -114,10 +108,9 @@ spec:
           component_id: ${{ parameters.component_id }}
           description: ${{ parameters.description }}
           artifact_id: ${{ parameters.component_id }}
-          java_package_domain: ${{ parameters.java_package_domain }}
-          folder_package_domain: ${{ parameters.java_package_domain | replace('.', '/') }}
-          java_group_name: ${{ paramaters.java_group_name }}
-          java_package_name: ${{ parameters.java_package_name }}
+          folder_java_package: ${{ parameters.java_package | replace('.', '/') }}
+          java_group_id: ${{ paramaters.java_group_id }}
+          java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
           application: ${{ parameters.application }}
           organization: croway

@@ -1,4 +1,4 @@
-package ${{ values.java_package_name }};
+package ${{ values.java_package }};
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGe
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 @ComponentScan(
-    basePackages = {"${{ values.java_package_name }}"},
+    basePackages = {"${{ values.java_package }}"},
     nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 public class Application {

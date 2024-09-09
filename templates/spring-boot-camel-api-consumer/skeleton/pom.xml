@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>${{ values.java_group_name }}</groupId>
+    <groupId>${{ values.java_group_id }}</groupId>
     <artifactId>${{ values.component_id }}</artifactId>
     <packaging>jar</packaging>
     <name>${{ values.component_id }}</name>
@@ -38,6 +38,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
@@ -118,9 +122,9 @@
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <dateLibrary>java8</dateLibrary>
                                 <sourceFolder>src/main/java</sourceFolder>
-                                <basePackage>${{ values.java_package_name }}</basePackage>
-                                <modelPackage>${{ values.java_package_name }}.model</modelPackage>
-                                <apiPackage>${{ values.java_package_name }}.api</apiPackage>
+                                <basePackage>${{ values.java_package }}</basePackage>
+                                <modelPackage>${{ values.java_package }}.model</modelPackage>
+                                <apiPackage>${{ values.java_package }}.api</apiPackage>
                                 <documentationProvider>none</documentationProvider>
                                 <useSpringController>false</useSpringController>
                                 <interfaceOnly>true</interfaceOnly>

@@ -2,7 +2,7 @@
     
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}</groupId>
+    <groupId>${{ values.java_group_id }}</groupId>
     <artifactId>${{ values.component_id }}</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0-SNAPSHOT</version>
@@ -158,7 +158,7 @@
                 <language>spring</language>
                 <library>spring-boot3</library>
                 <inputSpec>https://raw.githubusercontent.com/croway/${{values.application.split("/")[1]}}-${{ values.api_id }}-api/main/specification.yaml</inputSpec>
-                <modelPackage>${{ values.java_package_name }}.model</modelPackage>
+                <modelPackage>${{ values.java_package }}.model</modelPackage>
                 <generateApis>false</generateApis>
                 <generateApiDocumentation>false</generateApiDocumentation>
                 <generateModelDocumentation>false</generateModelDocumentation>
