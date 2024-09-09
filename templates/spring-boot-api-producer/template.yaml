@@ -72,7 +72,7 @@ spec:
           description: ${{ parameters.description }}
           artifact_id: ${{ parameters.component_id }}
           folder_java_package: ${{ parameters.java_package | replace('.', '/') }}
-          java_group_id: ${{ paramaters.java_group_id }}
+          java_group_id: ${{ parameters.java_group_id }}
           java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
           destination: https://github.com/croway/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
@@ -109,7 +109,7 @@ spec:
           description: ${{ parameters.description }}
           artifact_id: ${{ parameters.component_id }}
           folder_java_package: ${{ parameters.java_package | replace('.', '/') }}
-          java_group_id: ${{ paramaters.java_group_id }}
+          java_group_id: ${{ parameters.java_group_id }}
           java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
           application: ${{ parameters.application }}
