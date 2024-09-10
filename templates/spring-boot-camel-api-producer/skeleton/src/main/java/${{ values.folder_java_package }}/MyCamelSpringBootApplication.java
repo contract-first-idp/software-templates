@@ -1,4 +1,4 @@
-package ${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }};
+package ${{ values.java_package }};
 
 import org.apache.camel.opentelemetry.starter.CamelOpenTelemetry;
 import org.springframework.boot.SpringApplication;

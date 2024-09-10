@@ -1,0 +1,24 @@
+- route:
+    from:
+      id: listPetsRoute
+      uri: direct:listPets
+      steps:
+        - log:
+            message: "do something here"
+        - setBody:
+            id: listPetsResponse
+            expression:
+              constant:
+                expression: |
+                  [
+                    {
+                      "id": 1,
+                      "name": "foo",
+                      "tag": "dog"
+                    },
+                    {
+                      "id": 1,
+                      "name": "bar",
+                      "tag": "cat"
+                    }
+                  ]

@@ -1,4 +1,4 @@
-package ${{ values.java_package_domain }};
+package ${{ values.java_package }};
 
 import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
 import org.assertj.core.api.Assertions;

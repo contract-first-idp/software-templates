@@ -1,4 +1,4 @@
-package ${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }};
+package ${{ values.java_package }};
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
@@ -16,7 +16,7 @@ public class TimerToLog extends RouteBuilder {
     public void configure() throws Exception {
 
         from("timer://foo?fixedRate=true&period=1000")
-                .to("log:com.mycompany.order?showAll=true&multiline=true");
+                .to("log:${{ values.java_package }}?showAll=true&multiline=true");
 
     }
 }

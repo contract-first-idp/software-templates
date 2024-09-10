@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.openapitools</groupId>
+    <groupId>${{ values.java_group_id }}</groupId>
     <artifactId>${{ values.component_id }}</artifactId>
     <packaging>jar</packaging>
     <name>${{ values.component_id }}</name>
@@ -9,18 +9,39 @@
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring.boot.camel.version>3.8.0</spring.boot.camel.version>
+        <spring.boot.camel.version>4.7.0</spring.boot.camel.version>
+        <spring.boot-version>3.3.1</spring.boot-version>
     </properties>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.6</version>
-    </parent>
+
+    <dependencyManagement>
+        <dependencies>
+          <!-- Camel BOM -->
+          <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-spring-boot-bom</artifactId>
+            <version>${spring.boot.camel.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+          <!-- Spring Boot BOM -->
+          <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>${spring.boot-version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
@@ -29,18 +50,6 @@
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-spring-boot-starter</artifactId>
-            <version>${spring.boot.camel.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core</artifactId>
-            <version>${spring.boot.camel.version}</version>
-        </dependency>
-        <!-- @Nullable annotation -->
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -50,11 +59,6 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.openapitools</groupId>
-            <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.6</version>
-        </dependency>
         <!-- Bean Validation API support -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -63,6 +67,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.6</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -78,6 +87,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot-version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -89,7 +99,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>7.0.1</version>
+                <version>7.8.0</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -109,11 +119,12 @@
                                 <artifactId>${project.artifactId}</artifactId>
                                 <groupId>${project.groupId}</groupId>
                                 <version>${project.version}</version>
-                                <dateLibrary>java11</dateLibrary>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <dateLibrary>java8</dateLibrary>
                                 <sourceFolder>src/main/java</sourceFolder>
-                                <basePackage>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}</basePackage>
-                                <modelPackage>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.model</modelPackage>
-                                <apiPackage>${{ values.java_package_domain }}.${{ values.java_group_name }}.${{ values.java_package_name }}.api</apiPackage>
+                                <basePackage>${{ values.java_package }}</basePackage>
+                                <modelPackage>${{ values.java_package }}.model</modelPackage>
+                                <apiPackage>${{ values.java_package }}.api</apiPackage>
                                 <documentationProvider>none</documentationProvider>
                                 <useSpringController>false</useSpringController>
                                 <interfaceOnly>true</interfaceOnly>
