@@ -12,3 +12,4 @@ spec:
     - https://github.com/contract-first-idp/software-templates/blob/main/templates/spring-boot-api-producer/template.yaml
     - https://github.com/contract-first-idp/software-templates/blob/main/templates/spring-boot-camel-api-consumer/template.yaml
     - https://github.com/contract-first-idp/software-templates/blob/main/templates/spring-boot-camel-api-producer/template.yaml
+    - https://github.com/contract-first-idp/software-templates/blob/main/templates/camel-quarkus-consumer/template.yaml

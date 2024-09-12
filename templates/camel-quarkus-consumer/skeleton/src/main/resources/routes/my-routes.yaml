@@ -1,0 +1,19 @@
+- route:
+    id: router-timer-to-log
+    nodePrefixId: route-timer-to-log
+    from:
+      id: from-timer-to-log
+      uri: timer
+      parameters:
+        timerName: from-yaml
+        period: "{{timer.period}}"
+      steps:
+        - bean:
+            id: bean-timer-to-log
+            ref: greeting
+            method: greet
+        - to:
+            id: log-timer-to-log
+            uri: log
+            parameters:
+              loggerName: timer-yaml
