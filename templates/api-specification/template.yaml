@@ -58,7 +58,7 @@ spec:
           description: ${{ parameters.description }}
           mock_provider_url: ${{ parameters.mock_provider_url }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api
+          destination: https://github.com/croway/${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api
           application: ${{ parameters.application }}
 
     - id: publish
@@ -67,7 +67,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.api_id }}
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api&owner=croway
         repoVisibility: public
         defaultBranch: main
         deleteBranchOnMerge: true
@@ -88,7 +88,7 @@ spec:
       name: open system pull request
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=croway
         branchName: ${{ parameters.api_id }}-api
         title: add ${{ parameters.api_id }} API
         description: add ${{ parameters.api_id}} API

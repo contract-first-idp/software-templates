@@ -4,7 +4,7 @@ metadata:
   version: 0.0.1
   displayName: CEQ Java ubi8
   description: CEQ and ubi8 image
-  generateName: contract-first-idp
+  generateName: croway
   icon: >-
     https://raw.githubusercontent.com/devfile-samples/devfile-stack-icons/main/java-maven.jpg
   tags:

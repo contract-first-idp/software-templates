@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/contract-first-idp/developer-charts
+    repoURL: https://github.com/croway/developer-charts
     targetRevision: HEAD
     path: spring-boot-application
     helm:

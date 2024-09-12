@@ -51,7 +51,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: GitOps manifest for ${{ parameters.application_id }}
-        repoUrl: github.com?repo=${{ parameters.application_id }}-system&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application_id }}-system&owner=croway
         repoVisibility: public
         defaultBranch: main
         deleteBranchOnMerge: true
@@ -73,7 +73,7 @@ spec:
       name: open domain pull request
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=demo-domain&owner=contract-first-idp
+        repoUrl: github.com?repo=demo-domain&owner=croway
         branchName: ${{ parameters.application_id }}
         title: add ${{ parameters.application_id }} system
         description: add ${{ parameters.application_id }} system

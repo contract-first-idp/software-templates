@@ -75,7 +75,7 @@ spec:
           java_group_id: ${{ parameters.java_group_id }}
           java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
+          destination: https://github.com/croway/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
           application: ${{ parameters.application }}
           api_id: ${{ parameters.api.split("/")[1] }}
 
@@ -85,7 +85,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.component_id }}
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=croway
         repoVisibility: public
         defaultBranch: main
         deleteBranchOnMerge: true
@@ -113,7 +113,7 @@ spec:
           java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
           application: ${{ parameters.application }}
-          organization: contract-first-idp
+          organization: croway
           team: ${{ parameters.owner }}
           repo_id: ${{ parameters.component_id }}
         targetPath: ./system-gitops
@@ -122,7 +122,7 @@ spec:
       name: Open PR to System
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=croway
         branchName: ${{ parameters.component_id }}-component
         title: add ${{ parameters.component_id }} component
         description: add ${{ parameters.component_id }} component

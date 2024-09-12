@@ -111,7 +111,7 @@
                             <library>spring-boot</library>
                             <output>${project.basedir}/target/generated-sources</output>
                             <inputSpec>
-                                https://raw.githubusercontent.com/contract-first-idp/${{values.application.split("/")[1]}}-${{ values.api_id }}-api/main/specification.yaml
+                                https://raw.githubusercontent.com/croway/${{values.application.split("/")[1]}}-${{ values.api_id }}-api/main/specification.yaml
                             </inputSpec>
 
                             <configOptions>
