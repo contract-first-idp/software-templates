@@ -235,6 +235,7 @@
             <plugin>
                 <groupId>io.apicurio</groupId>
                 <artifactId>apicurio-registry-maven-plugin</artifactId>
+                <version>2.6.4.Final</version>
                 <executions>
                   <execution>
                     <phase>generate-sources</phase>
@@ -242,12 +243,15 @@
                       <goal>download</goal> 
                     </goals>
                     <configuration>
-                      <registryUrl>${{ values.service_registry_provider_url }}/api</registryUrl> 
-                          <ids>
-                            <param1>${{ values.api_id }}</param1>
-                          </ids>
-                          <artifactExtension>.json</artifactExtension> 
-                      <outputDirectory>${project.build.directory}/api-registry</outputDirectory>
+                      <registryUrl>${{ values.service_registry_provider_url }}</registryUrl> 
+                      <artifacts>
+                        <artifact>
+                            <groupId>${{ values.api_group }}</groupId> 
+                            <artifactId>${{ values.api_id }}</artifactId>
+                            <file>${project.build.directory}/classes/api-registry/${{ values.api_id }}.json</file>
+                            <overwrite>true</overwrite>
+                        </artifact>
+                    </artifacts>
                    </configuration>
                  </execution>
                 </executions>
