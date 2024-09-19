@@ -1,0 +1,143 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: quarkus-camel-api-consumer-template
+  title: Quarkus Camel REST consumer
+  description: Create a simple REST consumer using Camel with Quarkus
+spec:
+  owner: service@example.com
+  type: service
+  
+  parameters:
+    - title: API consumer parameters
+      required:
+        - component_id
+        - owner
+        - java_group_id
+        - java_package
+        - application
+        - description
+        - api
+      properties:
+        component_id:
+          title: Name
+          type: string
+          description: Unique name of the component
+        java_group_id:
+          title: Group Name
+          type: string
+          description: Name for the group id, eg. (backstage in my.group)
+        java_package:
+          title: Java Package Name
+          type: string
+          description: Name for the java package. eg (package in my.package.name)
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this component does
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds: 
+              - Group
+        application:
+          title: System
+          type: string
+          description: System to which this Component belongs
+          ui:field: OwnedEntityPicker
+          ui:options:
+            allowedKinds:
+            - System
+        api:
+          title: API
+          type: string
+          description: The API being implemented
+          ui:field: OwnedEntityPicker
+          ui:options:
+            allowedKinds:
+            - API
+        service_registry_provider_url:
+          title: Service Registry Provider URL
+          type: string
+          description: Apicurio Registry Host
+          default: https://apicurioregistry.apps.cluster-example.com
+
+  steps:
+    - id: template
+      name: render component source code
+      action: fetch:template
+      input:
+        url: ./skeleton
+        copyWithoutRender: []
+        values:
+          component_id: ${{ parameters.component_id }}
+          description: ${{ parameters.description }}
+          artifact_id: ${{ parameters.component_id }}
+          folder_java_package: ${{ parameters.java_package | replace('.', '/') }}
+          java_group_id: ${{ parameters.java_group_id }}
+          java_package: ${{ parameters.java_package }}
+          owner: ${{ parameters.owner }}
+          destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
+          application: ${{ parameters.application }}
+          api_id: ${{ parameters.api.split("/")[1] }}
+          service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
+
+    - id: publish
+      name: publish component source repository
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.component_id }}
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=contract-first-idp
+        repoVisibility: public
+        defaultBranch: main
+        deleteBranchOnMerge: true
+        protectDefaultBranch: false
+
+    - id: register
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: '${{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
+
+    - id: template-system-pull-request
+      name: render system pull request
+      action: fetch:template
+      input:
+        url: ./system
+        copyWithoutRender: []
+        values:
+          component_id: ${{ parameters.component_id }}
+          description: ${{ parameters.description }}
+          artifact_id: ${{ parameters.component_id }}
+          folder_java_package: ${{ parameters.java_package | replace('.', '/') }}
+          java_group_id: ${{ parameters.java_group_id }}
+          java_package: ${{ parameters.java_package }}
+          owner: ${{ parameters.owner }}
+          application: ${{ parameters.application }}
+          organization: contract-first-idp
+          team: ${{ parameters.owner }}
+          repo_id: ${{ parameters.component_id }}
+        targetPath: ./system-gitops
+
+    - id: pull-request
+      name: Open PR to System
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp
+        branchName: ${{ parameters.component_id }}-component
+        title: add ${{ parameters.component_id }} component
+        description: add ${{ parameters.component_id }} component
+        sourcePath: ./system-gitops
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

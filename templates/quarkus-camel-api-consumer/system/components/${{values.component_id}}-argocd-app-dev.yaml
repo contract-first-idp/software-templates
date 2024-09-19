@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${{ values.component_id }}-dev
+  namespace: openshift-gitops
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/contract-first-idp/developer-charts
+    targetRevision: HEAD
+    path: quarkus-application
+    helm:
+      values: |
+        system: ${{values.application.split("/")[1]}}
+        component: ${{ values.component_id }}
+        environment: dev
+        image:
+          tag: latest
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ${{values.application.split("/")[1]}}-dev
+  syncPolicy:
+    automated: 
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=false
+    - RespectIgnoreDifferences=true
+    - ApplyOutOfSyncOnly=true
+    retry:
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 10m

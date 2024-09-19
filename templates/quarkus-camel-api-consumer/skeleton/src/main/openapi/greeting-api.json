@@ -1,0 +1,80 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Greeting API",
+    "description": "API for handling greeting requests.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/greet": {
+      "post": {
+        "summary": "Handle greeting request",
+        "description": "Accepts a greeting request and returns a greeting response.",
+        "operationId": "greetOID",
+        "requestBody": {
+          "description": "Greeting request body",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GreetingRequest"
+              },
+              "examples": {
+                "sample": {
+                  "summary": "Sample Request",
+                  "value": {
+                    "name": "John"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Greeting response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GreetingResponse"
+                },
+                "examples": {
+                  "sample": {
+                    "summary": "Sample Response",
+                    "value": {
+                      "response": "Hello John"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GreetingRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the person to greet."
+          }
+        },
+        "required": ["name"]
+      },
+      "GreetingResponse": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "string",
+            "description": "The greeting message."
+          }
+        },
+        "required": ["response"]
+      }
+    }
+  }
+}
