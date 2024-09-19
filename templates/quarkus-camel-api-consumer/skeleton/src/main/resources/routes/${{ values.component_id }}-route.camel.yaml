@@ -1,0 +1,25 @@
+- rest:
+    openApi:
+      specification: api-registry/${{ values.api_id }}.json
+- route:
+    id: route-template-post
+    description: Route template
+    from:
+      id: from-template-post
+      uri: direct:operationIdPost
+      parameters:
+        exchangePattern: InOut
+      steps:
+        - unmarshal:
+            json:
+              library: Jackson
+        - log:
+            id: log-request
+            # Access json properties using '${body[lastName]}'
+            message: "Request body: ${body}."
+        - setBody:
+            id: set-response
+            simple: '{ "received": true }'
+        - marshal:
+            json:
+              library: Jackson

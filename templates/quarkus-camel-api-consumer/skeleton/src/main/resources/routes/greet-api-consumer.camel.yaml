@@ -1,0 +1,24 @@
+- rest:
+    openApi:
+      specification: greeting-api.json
+- route:
+    id: route-greet-post
+    description: Route greeting
+    from:
+      id: from-greet
+      uri: direct:greetOID
+      parameters:
+        exchangePattern: InOut
+      steps:
+        - unmarshal:
+            json:
+              library: Jackson
+        - log:
+            id: log-request
+            message: "Greet ${body[name]}."
+        - to:
+            id: set-response
+            uri: bean:greeting?method=greet
+        - marshal:
+            json:
+              library: Jackson
