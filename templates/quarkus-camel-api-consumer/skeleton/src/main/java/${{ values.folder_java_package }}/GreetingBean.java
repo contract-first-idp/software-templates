@@ -1,10 +1,10 @@
 package ${{ values.java_package }};
 
+import java.util.HashMap;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
-
-import java.util.HashMap;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 

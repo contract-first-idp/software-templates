@@ -14,10 +14,10 @@
             json:
               library: Jackson
         - log:
-            id: log-request
+            id: log-greet-request
             message: "Greet ${body[name]}."
         - to:
-            id: set-response
+            id: set-greet-response
             uri: bean:greeting?method=greet
         - marshal:
             json:
