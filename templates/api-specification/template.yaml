@@ -45,6 +45,15 @@ spec:
           type: string
           description: Microcks Host
           default: https://microcks-microcks.apps.cluster-example.com
+        service_registry_provider_url:
+          title: Service Registry Provider URL
+          type: string
+          description: Apicurio Registry Host
+          default: https://apicurioregistry.apps.cluster-example.com
+        group_id:
+          title: Apicurio Registry Group ID
+          type: string
+          default: com.redhat
 
   steps:
     - id: template
@@ -60,6 +69,8 @@ spec:
           owner: ${{ parameters.owner }}
           destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api
           application: ${{ parameters.application }}
+          service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
+          group_id: ${{ parameters.group_id }}
 
     - id: publish
       name: publish API specification repository
