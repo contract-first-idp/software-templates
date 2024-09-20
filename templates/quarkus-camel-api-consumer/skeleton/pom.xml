@@ -234,7 +234,7 @@
             <plugin>
                 <groupId>io.apicurio</groupId>
                 <artifactId>apicurio-registry-maven-plugin</artifactId>
-                <version>${registry.version}</version>
+                <version>${apicurio-registry-maven-plugin.version}</version>
                 <executions>
                   <execution>
                     <phase>generate-sources</phase>
@@ -246,7 +246,7 @@
                       <artifacts>
                         <artifact>
                             <groupId>${{ values.java_group_id }}</groupId> 
-                            <artifactId>${{ values.api_id }}-api</artifactId>
+                            <artifactId>${{ values.api_id }}</artifactId>
                             <file>${project.build.directory}/classes/api-registry/${{ values.api_id }}-api.json</file>
                             <overwrite>true</overwrite>
                         </artifact>
