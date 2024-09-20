@@ -64,6 +64,10 @@ spec:
           type: string
           description: Apicurio Registry Host
           default: https://apicurioregistry.apps.cluster-example.com
+        service_registry_group_id:
+          title: Service Registry Group ID
+          type: string
+          default: com.redhat
 
   steps:
     - id: template
@@ -85,6 +89,7 @@ spec:
           api_group: ${{ parameters.api.split("/")[0] }}
           api_id: ${{ parameters.api.split("/")[1] }}
           service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
+          service_registry_group_id: ${{ parameters.service_registry_group_id }}
 
     - id: publish
       name: publish component source repository
