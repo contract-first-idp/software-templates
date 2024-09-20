@@ -16,6 +16,7 @@ spec:
         domain: contract-first-idp
         system: ${{values.application.split("/")[1]}}
         component: ${{ values.component_id }}
+        deployment: ${{ values.deployment }}
   destination:
     server: https://kubernetes.default.svc
     namespace: ${{values.application.split("/")[1]}}-build

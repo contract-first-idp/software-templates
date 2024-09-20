@@ -35,6 +35,20 @@ spec:
           title: Description
           type: string
           description: Help others understand what this component does
+        deployment:
+          title: Select the deployment strategy
+          type: string
+          default: jvm
+          enum:
+            - jvm
+            - legacy-jar
+            - native
+            - native-micro
+          enumNames:
+            - 'JVM'
+            - 'JVM with legacy-jar'
+            - 'Native'
+            - 'Native Micro'
         owner:
           title: Owner
           type: string
@@ -64,6 +78,10 @@ spec:
           type: string
           description: Apicurio Registry Host
           default: https://apicurioregistry.apps.cluster-example.com
+        service_registry_group_id:
+          title: Service Registry Group ID
+          type: string
+          default: com.redhat
 
   steps:
     - id: template
@@ -85,6 +103,7 @@ spec:
           api_group: ${{ parameters.api.split("/")[0] }}
           api_id: ${{ parameters.api.split("/")[1] }}
           service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
+          service_registry_group_id: ${{ parameters.service_registry_group_id }}
 
     - id: publish
       name: publish component source repository
@@ -123,6 +142,7 @@ spec:
           organization: contract-first-idp
           team: ${{ parameters.owner }}
           repo_id: ${{ parameters.component_id }}
+          deployment: ${{ parameters.deployment }}
         targetPath: ./system-gitops
 
     - id: pull-request

@@ -23,6 +23,7 @@ spec:
     type: string
   workspaces:
   - name: shared-data
+  - name: maven-settings
   tasks:
   - name: fetch-source
     taskRef:
@@ -36,6 +37,7 @@ spec:
     workspaces:
     - name: output
       workspace: shared-data
+  {%- if values.mock_provider_url %}
   - name: run-spectral
     runAfter: ["fetch-source"]
     taskRef:
@@ -59,3 +61,21 @@ spec:
     workspaces:
     - name: data
       workspace: shared-data
+  {%- endif %}
+  {%- if values.service_registry_provider_url %}
+  - name: register-apicurio
+    taskRef:
+      name: maven
+      kind: ClusterTask
+    runAfter: 
+      - fetch-source
+    params:
+    - name: GOALS
+      value: 
+        - generate-sources
+    workspaces:
+    - name: source
+      workspace: shared-data
+    - name: maven-settings
+      workspace: maven-settings
+  {%- endif %}

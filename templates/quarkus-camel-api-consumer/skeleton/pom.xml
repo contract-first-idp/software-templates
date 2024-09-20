@@ -231,14 +231,14 @@
                 </executions>
             </plugin>
 
+            {%- if values.service_registry_provider_url %}
             <!--
             This plugin connects with the Service Registry and download
             the contracts (OpenApi) used in the project -->
-            {%- if values.service_registry_provider_url %}
             <plugin>
                 <groupId>io.apicurio</groupId>
                 <artifactId>apicurio-registry-maven-plugin</artifactId>
-                <version>${apicurio-registry-maven-plugin.version}</version>
+                <version>${registry.version}</version>
                 <executions>
                   <execution>
                     <phase>generate-sources</phase>
@@ -259,7 +259,7 @@
                  </execution>
                 </executions>
             </plugin>
-            {% endif %}
+            {%- endif %}
         </plugins>
     </build>
 </project>
