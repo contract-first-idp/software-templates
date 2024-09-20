@@ -245,7 +245,7 @@
                       <registryUrl>${{ values.service_registry_provider_url }}</registryUrl> 
                       <artifacts>
                         <artifact>
-                            <groupId>${{ values.java_group_id }}</groupId> 
+                            <groupId>${{ values.service_registry_group_id }}</groupId>
                             <artifactId>${{ values.api_id }}</artifactId>
                             <file>${project.build.directory}/classes/api-registry/${{ values.api_id }}-api.json</file>
                             <overwrite>true</overwrite>
