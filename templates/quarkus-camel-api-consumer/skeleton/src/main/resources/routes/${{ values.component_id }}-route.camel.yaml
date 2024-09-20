@@ -1,12 +1,10 @@
 - rest:
     openApi:
-      specification: api-registry/${{ values.api_id }}.json
-      missingOperation: mock
+      specification: api-registry/${{ values.api_id }}-api.json
 - route:
-    id: route-template-post
-    description: Route template
+    id: route-endpoint-4325
+    description: Route /path
     from:
-      id: from-template-post
       uri: direct:operationIdUpdateMe
       parameters:
         exchangePattern: InOut
@@ -15,9 +13,6 @@
             json:
               library: Jackson
         - log:
-            id: log-api-request
-            # Access json properties using '${body[lastName]}'
             message: "Request body: ${body}."
         - setBody:
-            id: set-api-response
             simple: '{ "received": true }'

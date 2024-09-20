@@ -82,7 +82,6 @@ spec:
           owner: ${{ parameters.owner }}
           destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
           application: ${{ parameters.application }}
-          api_group: ${{ parameters.api.split("/")[0] }}
           api_id: ${{ parameters.api.split("/")[1] }}
           service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
 
