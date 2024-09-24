@@ -5,10 +5,16 @@ metadata:
   description: ${{values.description | dump}}
   tags:
     - java
+  links:
+    - url: https://devspaces.apps.cluster-example.com/#${{values.destination}}
+      title: Open in OpenShift Dev Spaces
+      icon: web
+  annotations:
+    github.com/project-slug: ${{values.project_slug}}
 spec:
   type: service
   lifecycle: experimental
   owner: ${{values.owner | dump}}
   system: ${{values.application}}
-  consumesApis: 
+  providesApis: 
     - ${{values.api_id}}

@@ -1,15 +1,15 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: quarkus-camel-api-consumer-template
-  title: Quarkus Camel REST consumer
-  description: Create a simple REST consumer using Camel with Quarkus
+  name: quarkus-camel-api-producer-template
+  title: Quarkus Camel REST server
+  description: Create a REST service using Camel with Quarkus
 spec:
   owner: service@example.com
   type: service
   
   parameters:
-    - title: API consumer parameters
+    - title: API server parameters
       required:
         - component_id
         - owner
@@ -99,6 +99,7 @@ spec:
           java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
           destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
+          project_slug: contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
           application: ${{ parameters.application }}
           api_id: ${{ parameters.api.split("/")[1] }}
           service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
