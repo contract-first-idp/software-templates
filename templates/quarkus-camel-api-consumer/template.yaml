@@ -98,7 +98,7 @@ spec:
           java_group_id: ${{ parameters.java_group_id }}
           java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
+          destination: https://github.com/agiertli/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
           application: ${{ parameters.application }}
           api_id: ${{ parameters.api.split("/")[1] }}
           service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
@@ -110,7 +110,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.component_id }}
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=agiertli
         repoVisibility: public
         defaultBranch: main
         deleteBranchOnMerge: true
@@ -138,7 +138,7 @@ spec:
           java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
           application: ${{ parameters.application }}
-          organization: contract-first-idp
+          organization: agiertli
           team: ${{ parameters.owner }}
           repo_id: ${{ parameters.component_id }}
           deployment: ${{ parameters.deployment }}
