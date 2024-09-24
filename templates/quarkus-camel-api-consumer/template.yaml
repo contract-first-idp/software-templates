@@ -2,12 +2,12 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: quarkus-camel-api-consumer-template
-  title: Quarkus Camel REST consumer
+  title: Quarkus Camel REST consumer-v2
   description: Create a simple REST consumer using Camel with Quarkus
 spec:
   owner: service@example.com
   type: service
-  
+
   parameters:
     - title: API consumer parameters
       required:
@@ -45,17 +45,17 @@ spec:
             - native
             - native-micro
           enumNames:
-            - 'JVM'
-            - 'JVM with legacy-jar'
-            - 'Native'
-            - 'Native Micro'
+            - "JVM"
+            - "JVM with legacy-jar"
+            - "Native"
+            - "Native Micro"
         owner:
           title: Owner
           type: string
           description: Owner of the component
           ui:field: OwnerPicker
           ui:options:
-            allowedKinds: 
+            allowedKinds:
               - Group
         application:
           title: System
@@ -64,7 +64,7 @@ spec:
           ui:field: OwnedEntityPicker
           ui:options:
             allowedKinds:
-            - System
+              - System
         api:
           title: API
           type: string
@@ -72,7 +72,7 @@ spec:
           ui:field: OwnedEntityPicker
           ui:options:
             allowedKinds:
-            - API
+              - API
         service_registry_provider_url:
           title: Service Registry Provider URL
           type: string
@@ -108,7 +108,7 @@ spec:
       name: publish component source repository
       action: publish:github
       input:
-        allowedHosts: ['github.com']
+        allowedHosts: ["github.com"]
         description: This is ${{ parameters.component_id }}
         repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=agiertli
         repoVisibility: public
@@ -120,8 +120,8 @@ spec:
       name: Register Component
       action: catalog:register
       input:
-        repoContentsUrl: '${{ steps.publish.output.repoContentsUrl }}'
-        catalogInfoPath: '/catalog-info.yaml'
+        repoContentsUrl: "${{ steps.publish.output.repoContentsUrl }}"
+        catalogInfoPath: "/catalog-info.yaml"
 
     - id: template-system-pull-request
       name: render system pull request
