@@ -12,7 +12,7 @@ metadata:
   annotations:
     github.com/project-slug: ${{values.project_slug | dump}}
     backstage.io/kubernetes-id: ${{values.component_id | dump}}
-    backstage.io/kubernetes-label-selector: system=${{values.application | dump}}
+    backstage.io/kubernetes-label-selector: ${{values.system_label | dump}}
     janus-idp.io/tekton : ${{values.service_id | dump}}
 spec:
   type: service

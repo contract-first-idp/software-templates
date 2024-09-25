@@ -102,6 +102,7 @@ spec:
           project_slug: contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
           application: ${{ parameters.application }}
           service_id: ${{ parameters.component_id }}-service
+          system_label: system=${{ parameters.application.split("/")[1] }}
           api_id: ${{ parameters.api.split("/")[1] }}
           service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
           service_registry_group_id: ${{ parameters.service_registry_group_id }}
