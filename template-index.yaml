@@ -6,10 +6,10 @@ metadata:
 spec:
   type: url
   targets:
-    - https://github.com/contract-first-idp/software-templates/blob/main/templates/system/template.yaml
-    - https://github.com/contract-first-idp/software-templates/blob/main/templates/api-specification/template.yaml
-    - https://github.com/contract-first-idp/software-templates/blob/main/templates/quarkus-camel-api-consumer/template.yaml
-    - https://github.com/contract-first-idp/software-templates/blob/main/templates/spring-boot-api-consumer/template.yaml
-    - https://github.com/contract-first-idp/software-templates/blob/main/templates/spring-boot-api-producer/template.yaml
-    - https://github.com/contract-first-idp/software-templates/blob/main/templates/spring-boot-camel-api-consumer/template.yaml
-    - https://github.com/contract-first-idp/software-templates/blob/main/templates/spring-boot-camel-api-producer/template.yaml
+    - https://github.com/agiertli/software-templates/blob/main/templates/system/template.yaml
+    - https://github.com/agiertli/software-templates/blob/main/templates/api-specification/template.yaml
+    - https://github.com/agiertli/software-templates/blob/main/templates/quarkus-camel-api-producer/template.yaml
+    - https://github.com/agiertli/software-templates/blob/main/templates/spring-boot-api-consumer/template.yaml
+    - https://github.com/agiertli/software-templates/blob/main/templates/spring-boot-api-producer/template.yaml
+    - https://github.com/agiertli/software-templates/blob/main/templates/spring-boot-camel-api-consumer/template.yaml
+    - https://github.com/agiertli/software-templates/blob/main/templates/spring-boot-camel-api-producer/template.yaml
