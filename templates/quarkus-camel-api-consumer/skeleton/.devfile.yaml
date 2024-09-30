@@ -1,0 +1,77 @@
+schemaVersion: 2.2.0
+metadata:
+  name: ${{values.component_id}}
+  version: 0.0.1
+  displayName: CEQ Java ubi8
+  description: CEQ and ubi8 image
+  generateName: ${{values.component_id}}
+  icon: >-
+    https://raw.githubusercontent.com/devfile-samples/devfile-stack-icons/main/java-maven.jpg
+  tags:
+    - Java
+    - Quarkus
+    - Camel
+  projectType: quarkus
+  language: java
+attributes:
+  controller.devfile.io/storage-type: ephemeral
+components:
+  - name: development-tooling
+    container:
+      image: quay.io/devfile/universal-developer-image:latest
+      env:
+        - name: QUARKUS_HTTP_HOST
+          value: 0.0.0.0
+        - name: MAVEN_OPTS
+          value: "-Dmaven.repo.local=/home/user/.m2/repository"
+      memoryLimit: 5Gi
+      cpuLimit: 2500m
+      sourceMapping: $PROJECT_SOURCE
+      mountSources: true
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+      endpoints:
+        - name: http-8778
+          targetPort: 8778
+        - name: devtools
+          targetPort: 8000
+        - name: http
+          targetPort: 8080
+          exposure: public
+          secure: false
+          protocol: http
+        - name: http-8443
+          targetPort: 8443
+        - name: debug
+          targetPort: 5005
+          exposure: none
+          secure: false
+          protocol: tcp
+  - name: m2
+    volume:
+      size: 1G
+commands:
+  - id: package
+    exec:
+      label: "1. Package the application"
+      component: development-tooling
+      commandLine: "./mvnw package"
+      group:
+        kind: build
+        isDefault: true
+  - id: start-dev
+    exec:
+      label: "2. Start Development mode (Hot reload + debug)"
+      component: development-tooling
+      commandLine: "./mvnw compile quarkus:dev"
+      group:
+        kind: run
+        isDefault: true
+  - id: fix-java-version
+    exec:
+      component: development-tooling
+      commandLine: 'rm -rf ${HOME}/.java/current/* && ln -s /usr/lib/jvm/java-17-openjdk/* ${HOME}/.java/current'
+events:
+  postStart:
+    - fix-java-version

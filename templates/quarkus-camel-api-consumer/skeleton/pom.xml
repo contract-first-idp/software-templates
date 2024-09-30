@@ -77,15 +77,23 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-bean</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-mock</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-log</artifactId>
+            <artifactId>camel-quarkus-timer</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-bean</artifactId>
+            <artifactId>camel-quarkus-http</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-log</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
@@ -263,12 +271,14 @@
                     <configuration>
                       <registryUrl>${{ values.service_registry_provider_url }}</registryUrl> 
                       <artifacts>
-                        <artifact>
-                            <groupId>${{ values.service_registry_group_id }}</groupId>
-                            <artifactId>${{ values.api_id }}</artifactId>
-                            <file>${project.build.directory}/classes/api-registry/${{ values.api_id }}-api.json</file>
-                            <overwrite>true</overwrite>
-                        </artifact>
+                        {% for api in values.apis %}
+                            <artifact>
+                                <groupId>${{ values.service_registry_group_id }}</groupId>
+                                <artifactId>${{ api.split('/')[1] }}</artifactId>
+                                <file>${project.build.directory}/classes/api-registry/${{ api.split('/')[1] }}-api.json</file>
+                                <overwrite>true</overwrite>
+                            </artifact>
+                        {% endfor %}
                     </artifacts>
                    </configuration>
                  </execution>
