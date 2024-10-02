@@ -14,7 +14,7 @@ metadata:
   projectType: spring
   language: java
 attributes:
-  controller.devfile.io/storage-type: ephemeral
+  controller.devfile.io/storage-type: per-workspace
 components:
   - name: development-tooling
     container:
