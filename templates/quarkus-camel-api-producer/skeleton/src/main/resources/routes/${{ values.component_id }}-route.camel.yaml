@@ -1,18 +1,18 @@
 - rest:
     openApi:
+      missingOperation: mock
       specification: api-registry/${{ values.api_id }}-api.json
 - route:
     id: route-endpoint-4325
     description: Route /path
     from:
       uri: direct:operationIdUpdateMe
-      parameters:
-        exchangePattern: InOut
+      parameters: {}
       steps:
         - unmarshal:
             json:
               library: Jackson
         - log:
-            message: "Request body: ${body}."
+            message: "${body}"
         - setBody:
-            simple: '{ "received": true }'
+            simple: '{"received": true }'

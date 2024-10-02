@@ -7,10 +7,10 @@ metadata:
     - java
   links:
     - url: https://devspaces.apps.cluster-example.com/?storageType=per-workspace#${{values.destination}}
-      title: Open in OpenShift Dev Spaces
+      title: OpenShift Dev Spaces
       icon: web
     - url: https://hawtio-online.apps.cluster-example.com/online/discover?namespace=${{values.system_label}}
-      title: Open in HawtIO
+      title: HawtIO
       icon: web
   annotations:
     github.com/project-slug: ${{values.project_slug | dump}}
