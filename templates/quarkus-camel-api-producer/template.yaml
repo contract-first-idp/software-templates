@@ -77,7 +77,7 @@ spec:
           title: Service Registry Provider URL
           type: string
           description: Apicurio Registry Host
-          default: https://apicurioregistry.apps.cluster-example.com
+          default: https://registry-apicurio-registry.apps.cluster-example.com
         service_registry_group_id:
           title: Service Registry Group ID
           type: string
