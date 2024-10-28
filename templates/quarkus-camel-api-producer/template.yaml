@@ -77,7 +77,7 @@ spec:
           title: Service Registry Provider URL
           type: string
           description: Apicurio Registry Host
-          default: https://registry-apicurio-registry.apps.cluster-example.com
+          default: https://registry-apicurio-registry.apps.cluster-ldvg8.ldvg8.sandbox2768.opentlc.com
         service_registry_group_id:
           title: Service Registry Group ID
           type: string
@@ -98,8 +98,8 @@ spec:
           java_group_id: ${{ parameters.java_group_id }}
           java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
-          project_slug: contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
+          destination: https://github.com/davgordo/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
+          project_slug: davgordo/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
           application: ${{ parameters.application }}
           service_id: ${{ parameters.component_id }}-service
           system_label: system=${{ parameters.application.split("/")[1] }}
@@ -113,7 +113,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.component_id }}
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=davgordo
         repoVisibility: public
         defaultBranch: main
         deleteBranchOnMerge: true
@@ -141,7 +141,7 @@ spec:
           java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
           application: ${{ parameters.application }}
-          organization: contract-first-idp
+          organization: davgordo
           team: ${{ parameters.owner }}
           repo_id: ${{ parameters.component_id }}
           deployment: ${{ parameters.deployment }}
@@ -151,7 +151,7 @@ spec:
       name: Open PR to System
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=davgordo
         branchName: ${{ parameters.component_id }}-component
         title: add ${{ parameters.component_id }} component
         description: add ${{ parameters.component_id }} component
