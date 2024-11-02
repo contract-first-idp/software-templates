@@ -41,6 +41,7 @@
                           <artifactId>${{ values.api_id }}</artifactId>
                           <type>OPENAPI</type>
                           <file>specification.yaml</file>
+                          <ifExists>RETURN_OR_UPDATE</ifExists>
                         </artifact>
                       </artifacts>
                       <existingReferences/>
