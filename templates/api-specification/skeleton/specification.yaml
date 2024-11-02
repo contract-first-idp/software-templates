@@ -3,8 +3,8 @@ info:
   title: ${{ values.api_id }}
   description: |-
     ${{ values.description }}
-  version: 0.0.1
+  version: 'v1'
 servers:
   - url: "http://localhost:8080"
-  - url: "${{ values.mock_provider_url }}/rest/${{ values.api_id }}/0.0.1"
+  - url: "${{ values.mock_provider_url }}/rest/${{ values.api_id }}/v1"
 paths: {}
