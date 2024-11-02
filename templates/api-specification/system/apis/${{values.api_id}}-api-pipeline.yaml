@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ${{ values.api_id }}-api-pipeline
+  name: ${{values.application.split("/")[1]}}-${{ values.api_id }}-api-pipeline
   namespace: openshift-gitops
   finalizers:
     - resources-finalizer.argocd.argoproj.io

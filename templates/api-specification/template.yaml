@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: api-specification-template
   title: OpenAPI Specification
-  description: Create an OpenAPI specification (v0.1)
+  description: Create an OpenAPI specification (v0.2)
 spec:
   owner: service@example.com
   type: api
