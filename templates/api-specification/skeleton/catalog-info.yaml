@@ -10,6 +10,6 @@ spec:
   type: openapi
   system: ${{values.application}}
   owner: ${{values.owner | dump}}
-  lifecycle: experimental
+  lifecycle: production
   definition:
     $openapi: ${{ values.destination }}/blob/main/specification.yaml
