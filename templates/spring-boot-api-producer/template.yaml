@@ -18,6 +18,7 @@ spec:
         - application
         - description
         - api
+        - cluster_domain
       properties:
         component_id:
           title: Name
@@ -59,6 +60,10 @@ spec:
           ui:options:
             allowedKinds:
             - API
+        cluster_domain:
+          title: Cluster domain
+          type: string
+          description: Cluster domain (like apps.example.com)    
 
   steps:
     - id: template
@@ -90,6 +95,18 @@ spec:
         defaultBranch: main
         deleteBranchOnMerge: true
         protectDefaultBranch: false
+
+    - id: webhook
+      name: webhook creation source repository
+      action: github:webhook
+      input:
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=davgordo
+        webhookUrl: https://webhook-${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-el-${{ parameters.application.split("/")[1] }}-build.${{ parameters.cluster_domain }}
+        webhookSecret: 'mysecret'
+        events: [ 'push' ]
+        active: true
+        contentType: 'json'
+        insecureSsl: false
 
     - id: register
       name: Register Component

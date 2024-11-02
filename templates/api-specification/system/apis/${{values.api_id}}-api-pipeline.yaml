@@ -8,9 +8,17 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/davgordo/${{values.application.split("/")[1]}}-${{ values.api_id }}-api
+    repoURL: https://github.com/davgordo/developer-charts
     targetRevision: HEAD
-    path: .tekton
+    path: api-specification-pipeline
+    helm:
+      values: |
+        domain: davgordo
+        system: ${{ values.application.split("/")[1] }}
+        component: ${{ values.api_id }}
+        groupid: ${{ values.group_id }}
+        apicurioRegistry: ${{ values.service_registry_provider_url | replace('https://', '') }}
+        mockRegistry: ${{ values.mock_provider_url | replace('https://', '') }}
   destination:
     server: https://kubernetes.default.svc
     namespace: ${{values.application.split("/")[1]}}-build
