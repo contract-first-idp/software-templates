@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: system-template
   title: System Template
-  description: Create a System to contain a set of application Components, APIs, and Resources
+  description: Create a System to contain a set of application Components, APIs, and Resources (v0.3)
 spec:
   owner: service@example.com
   type: system
@@ -30,8 +30,7 @@ spec:
           ui:field: OwnerPicker
           ui:options:
             allowedKinds: 
-              - Group      
-
+              - Group
   steps:
 
     - id: template-system
@@ -45,7 +44,7 @@ spec:
           description: ${{ parameters.description }}
           owner: ${{ parameters.owner }}
 
-    - id: publish-system
+    - id: publish
       name: publish system manifest repository
       action: publish:github
       input:
@@ -56,6 +55,13 @@ spec:
         defaultBranch: main
         deleteBranchOnMerge: true
         protectDefaultBranch: false
+
+    - id: register
+      name: register system entity
+      action: catalog:register
+      input:
+        repoContentsUrl: '${{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
 
     - id: template-domain-pull-request
       name: render domain pull request
@@ -69,7 +75,7 @@ spec:
           owner: ${{ parameters.owner }}
         targetPath: ./domain-gitops  
 
-    - id: pull-request-to-domain
+    - id: pr
       name: open domain pull request
       action: publish:github:pull-request
       input:
@@ -78,3 +84,13 @@ spec:
         title: add ${{ parameters.application_id }} system
         description: add ${{ parameters.application_id }} system
         sourcePath: ./domain-gitops
+
+  output:
+    links:
+      - title: Pull Request to Domain
+        url: ${{ steps.pr.output.remoteUrl }}
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
