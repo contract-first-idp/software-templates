@@ -14,7 +14,6 @@ spec:
         - application_id
         - owner
         - description
-        - cluster_domain
       properties:
         application_id:
           title: Name
@@ -31,11 +30,7 @@ spec:
           ui:field: OwnerPicker
           ui:options:
             allowedKinds: 
-              - Group
-        cluster_domain:
-          title: Cluster domain
-          type: string
-          description: Cluster domain (like apps.example.com)        
+              - Group      
 
   steps:
 
