@@ -49,12 +49,12 @@ spec:
           title: Mock Provider URL
           type: string
           description: Microcks Host
-          default: https://microcks-microcks.apps.cluster-ldvg8.ldvg8.sandbox2768.opentlc.com
+          default: https://microcks-microcks.apps.cluster-example.com
         service_registry_provider_url:
           title: Service Registry Provider URL
           type: string
           description: Apicurio Registry Host
-          default: https://registry-apicurio-registry.apps.cluster-ldvg8.ldvg8.sandbox2768.opentlc.com
+          default: https://registry-apicurio-registry.apps.cluster-example.com
         group_id:
           title: Apicurio Registry Group ID
           type: string
@@ -76,7 +76,7 @@ spec:
           description: ${{ parameters.description }}
           mock_provider_url: ${{ parameters.mock_provider_url }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/davgordo/${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api
+          destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api
           application: ${{ parameters.application }}
           service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
           group_id: ${{ parameters.group_id }}
@@ -87,7 +87,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.api_id }}
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api&owner=davgordo
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api&owner=contract-first-idp
         repoVisibility: public
         defaultBranch: main
         deleteBranchOnMerge: true
@@ -97,7 +97,7 @@ spec:
       name: webhook creation source repository
       action: github:webhook
       input: 
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api&owner=davgordo
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api&owner=contract-first-idp
         webhookUrl: https://webhook-${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api-el-${{ parameters.application.split("/")[1] }}-build.${{ parameters.cluster_domain }}
         webhookSecret: 'mysecret'
         events: ['push']
@@ -123,7 +123,7 @@ spec:
       name: open system pull request
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=davgordo
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp
         branchName: ${{ parameters.api_id }}-api
         title: add ${{ parameters.api_id }} API
         description: add ${{ parameters.api_id}} API
