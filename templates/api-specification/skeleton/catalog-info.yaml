@@ -6,6 +6,15 @@ metadata:
   description: ${{values.description | dump}}
   annotations:
     backstage.io/spectral-ruleset-url: https://raw.githubusercontent.com/contract-first-idp/spectral-rules/main/ruleset.yaml
+  links:
+    - url: ${{ values.service_registry_provider_url }}/ui/artifacts/${{ values.group_id }}/${{ values.api_id }}/versions/latest
+      title: Apicurio Registry
+      icon: web
+    - url: ${{ values.mock_provider_url }}/#/services?name=${{ values.api_id }}
+      title: Microcks
+    - url: ${{ values.mock_provider_url }}/rest/ratings/v1
+      title: Mock
+      icon: web
 spec:
   type: openapi
   system: ${{values.application}}

@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: api-specification-template
   title: OpenAPI Specification
-  description: Create an OpenAPI specification (v0.3)
+  description: Create an OpenAPI specification (v0.6)
 spec:
   owner: service@example.com
   type: api
@@ -73,11 +73,11 @@ spec:
         values:
           api_id: ${{ parameters.api_id }}
           description: ${{ parameters.description }}
-          mock_provider_url: ${{ parameters.mock_provider_url }}
           owner: ${{ parameters.owner }}
           destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api
           application: ${{ parameters.application }}
-          service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
+          service_registry_provider_url: https://registry-apicurio-registry.${{ parameters.cluster_domain }}
+          mock_provider_url: https://microcks-microcks.${{ parameters.cluster_domain }}
           group_id: ${{ parameters.group_id }}
 
     - id: publish
@@ -137,7 +137,7 @@ spec:
 
   output:
     links:
-      - title: Pull Request to Domain
+      - title: Pull Request to System
         url: ${{ steps.pr.output.remoteUrl }}
       - title: Repository
         url: ${{ steps.publish.output.remoteUrl }}
