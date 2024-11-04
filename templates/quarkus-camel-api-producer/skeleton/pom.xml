@@ -266,7 +266,7 @@
                         <artifact>
                             <groupId>${{ values.service_registry_group_id }}</groupId>
                             <artifactId>${{ values.api_id }}</artifactId>
-                            <file>${project.build.directory}/classes/api-registry/${{ values.api_id }}-api.json</file>
+                            <file>${project.basedir}/src/main/openapi/${{ values.api_id }}-api.json</file>
                             <overwrite>true</overwrite>
                         </artifact>
                     </artifacts>

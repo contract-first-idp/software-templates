@@ -1,17 +1,13 @@
 - rest:
     openApi:
       missingOperation: mock
-      specification: api-registry/${{ values.api_id }}-api.json
+      specification: ${{ values.api_id }}-api.json
 - route:
-    id: route-endpoint-4325
-    description: Route /path
+    id: sample-route
     from:
-      uri: direct:operationIdUpdateMe
+      uri: direct:someOperationId
       parameters: {}
       steps:
-        - unmarshal:
-            json:
-              library: Jackson
         - log:
             message: "${body}"
         - setBody:
