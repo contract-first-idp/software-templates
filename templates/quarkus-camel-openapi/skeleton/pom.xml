@@ -95,6 +95,10 @@
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-jsonpath</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-http</artifactId>
+        </dependency>
         <!--
             This dependency is mandatory for enabling Camel management
             via JMX / Hawtio.
@@ -140,12 +144,7 @@
                     <groupId>net.revelc.code.formatter</groupId>
                     <artifactId>formatter-maven-plugin</artifactId>
                     <version>${formatter-maven-plugin.version}</version>
-                    <configuration><artifact>
-                            <groupId>${{ values.service_registry_group_id }}</groupId>
-                            <artifactId>${{ values.api_id }}</artifactId>
-                            <file>${project.basedir}/src/main/openapi/${{ values.api_id }}-api.json</file>
-                            <overwrite>true</overwrite>
-                        </artifact>
+                    <configuration>
                         <configFile>
                             ${project.basedir}/eclipse-formatter-config.xml</configFile>
                         <lineEnding>LF</lineEnding>
@@ -272,6 +271,12 @@
                             <groupId>${{ values.service_registry_group_id }}</groupId>
                             <artifactId>${{ values.api_id }}</artifactId>
                             <file>${project.basedir}/src/main/openapi/${{ values.api_id }}-api.json</file>
+                            <overwrite>true</overwrite>
+                        </artifact>
+                        <artifact>
+                            <groupId>${{ values.service_registry_group_id }}</groupId>
+                            <artifactId>${{ values.consumed_api_id }}</artifactId>
+                            <file>${project.basedir}/src/main/openapi/${{ values.consumed_api_id }}-api.json</file>
                             <overwrite>true</overwrite>
                         </artifact>
                     </artifacts>

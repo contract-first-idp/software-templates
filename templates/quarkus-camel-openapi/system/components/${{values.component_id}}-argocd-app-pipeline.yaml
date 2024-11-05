@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${{values.application.split("/")[1]}}-${{ values.component_id }}-pipeline
+  namespace: openshift-gitops
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    system: ${{values.application.split("/")[1]}}
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/contract-first-camel/developer-charts
+    targetRevision: HEAD
+    path: quarkus-pipeline
+    helm:
+      values: |
+        domain: contract-first-camel
+        system: ${{values.application.split("/")[1]}}
+        component: ${{ values.component_id }}
+        deployment: ${{ values.deployment }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ${{values.application.split("/")[1]}}-build
+  syncPolicy:
+    automated: 
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=false
+    - RespectIgnoreDifferences=true
+    - ApplyOutOfSyncOnly=true
+    retry:
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 10m
