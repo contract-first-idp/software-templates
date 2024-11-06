@@ -5,7 +5,7 @@ metadata:
   title: OpenAPI Specification
   description: Create an OpenAPI specification (v0.6)
 spec:
-  owner: service@example.com
+  owner: backstage-admin@redhat.com
   type: api
 
   parameters:

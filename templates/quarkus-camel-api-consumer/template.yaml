@@ -5,7 +5,7 @@ metadata:
   title: Quarkus Camel REST consumer
   description: Create a simple REST consumer using Camel with Quarkus
 spec:
-  owner: service@example.com
+  owner: backstage-admin@redhat.com
   type: service
   
   parameters:

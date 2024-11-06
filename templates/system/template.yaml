@@ -5,7 +5,7 @@ metadata:
   title: System Template
   description: Create a System to contain a set of application Components, APIs, and Resources (v0.3)
 spec:
-  owner: service@example.com
+  owner: backstage-admin@redhat.com
   type: system
 
   parameters:

@@ -5,7 +5,7 @@ metadata:
   title: Spring Boot Camel REST consumer
   description: Create a simple REST consumer using Camel with Spring Boot
 spec:
-  owner: service@example.com
+  owner: backstage-admin@redhat.com
   type: service
   
   parameters:

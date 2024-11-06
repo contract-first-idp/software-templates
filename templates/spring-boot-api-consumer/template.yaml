@@ -5,7 +5,7 @@ metadata:
   title: Spring Boot REST consumer
   description: Create a simple REST consumer
 spec:
-  owner: service@example.com
+  owner: backstage-admin@redhat.com
   type: service
   
   parameters:

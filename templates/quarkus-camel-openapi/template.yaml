@@ -5,7 +5,7 @@ metadata:
   title: Quarkus Camel OpenAPI
   description: OpenAPI server and client using Camel with Quarkus (v0.9)
 spec:
-  owner: service@example.com
+  owner: backstage-admin@redhat.com
   type: service
   
   parameters:

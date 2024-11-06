@@ -5,7 +5,7 @@ metadata:
   title: Spring Boot REST server
   description: Create a simple RESTful microservice using Spring Boot
 spec:
-  owner: service@example.com
+  owner: backstage-admin@redhat.com
   type: service
   
   parameters:

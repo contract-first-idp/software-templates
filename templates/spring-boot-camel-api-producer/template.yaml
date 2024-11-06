@@ -5,7 +5,7 @@ metadata:
   title: Spring Boot Camel REST server
   description: Create a REST service using Camel with Spring Boot
 spec:
-  owner: service@example.com
+  owner: backstage-admin@redhat.com
   type: service
   
   parameters:
