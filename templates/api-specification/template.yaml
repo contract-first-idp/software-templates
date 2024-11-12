@@ -3,9 +3,9 @@ kind: Template
 metadata:
   name: api-specification-template
   title: OpenAPI Specification
-  description: Create an OpenAPI specification
+  description: Create an OpenAPI specification (v0.6)
 spec:
-  owner: service@example.com
+  owner: backstage-admin@redhat.com
   type: api
 
   parameters:
@@ -16,8 +16,6 @@ spec:
         - application
         - description
         - group_id
-        - mock_provider_url
-        - service_registry_provider_url
         - cluster_domain
 
       properties:
@@ -62,7 +60,8 @@ spec:
         cluster_domain:
           title: Cluster domain
           type: string
-          description: Cluster domain (like apps.example.com)  
+          description: Cluster domain (like apps.example.com)
+          default: apps.cluster-m22mk.m22mk.sandbox2534.opentlc.com
 
   steps:
     - id: template
@@ -74,11 +73,11 @@ spec:
         values:
           api_id: ${{ parameters.api_id }}
           description: ${{ parameters.description }}
-          mock_provider_url: ${{ parameters.mock_provider_url }}
           owner: ${{ parameters.owner }}
           destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.api_id }}-api
           application: ${{ parameters.application }}
-          service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
+          service_registry_provider_url: https://registry-apicurio-registry.${{ parameters.cluster_domain }}
+          mock_provider_url: https://microcks-microcks.${{ parameters.cluster_domain }}
           group_id: ${{ parameters.group_id }}
 
     - id: publish
@@ -103,7 +102,14 @@ spec:
         events: ['push']
         active: true
         contentType: 'json'
-        insecureSsl: false     
+        insecureSsl: true
+
+    - id: register
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: '${{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
 
     - id: template-system-pull-request
       name: render system pull request
@@ -114,12 +120,12 @@ spec:
         values:
           api_id: ${{ parameters.api_id }}
           application: ${{ parameters.application }}
-          service_registry_provider_url: ${{ parameters.service_registry_provider_url }}
-          mock_provider_url: ${{ parameters.mock_provider_url }}
-          group_id: ${{ parameters.group_id }}
+          service_registry_provider_url: https://registry-apicurio-registry.${{ parameters.cluster_domain }}
+          mock_provider_url: https://microcks-microcks.${{ parameters.cluster_domain }}
+          group_id: ${{ parameters.group_id }}.${{ parameters.application.split("/")[1] }}
         targetPath: ./system-gitops
 
-    - id: pull-request-to-system
+    - id: pr
       name: open system pull request
       action: publish:github:pull-request
       input:
@@ -129,3 +135,12 @@ spec:
         description: add ${{ parameters.api_id}} API
         sourcePath: ./system-gitops
 
+  output:
+    links:
+      - title: Pull Request to System
+        url: ${{ steps.pr.output.remoteUrl }}
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

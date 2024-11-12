@@ -1,0 +1,26 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.component_id | dump}}
+  description: ${{values.description | dump}}
+  tags:
+    - java
+  links:
+    - url: https://devspaces.apps.cluster-m22mk.m22mk.sandbox2534.opentlc.com/?storageType=per-workspace#${{values.destination}}
+      title: OpenShift Dev Spaces
+      icon: web
+    - url: https://hawtio-online-hawtio-operator.apps.cluster-m22mk.m22mk.sandbox2534.opentlc.com/online/discover?namespace=${{values.system_label}}
+      title: HawtIO
+      icon: web
+  annotations:
+    github.com/project-slug: ${{values.project_slug | dump}}
+    backstage.io/kubernetes-id: ${{values.component_id | dump}}
+    backstage.io/kubernetes-label-selector: ${{values.system_label | dump}}
+    janus-idp.io/tekton : ${{values.service_id | dump}}
+spec:
+  type: service
+  lifecycle: experimental
+  owner: ${{values.owner | dump}}
+  system: ${{values.application}}
+  providesApis: 
+    - ${{values.api_id}}

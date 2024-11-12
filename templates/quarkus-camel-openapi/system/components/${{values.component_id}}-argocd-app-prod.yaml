@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ${{values.application.split("/")[1]}}-${{ values.component_id }}-dev
+  name: ${{values.application.split("/")[1]}}-${{ values.component_id }}-prod
   namespace: openshift-gitops
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -10,19 +10,20 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/contract-first-idp/developer-charts
+    repoURL: https://github.com/contract-first-camel/developer-charts
     targetRevision: HEAD
     path: quarkus-application
     helm:
       values: |
         system: ${{values.application.split("/")[1]}}
         component: ${{ values.component_id }}
-        environment: dev
+        environment: prod
         image:
           tag: latest
+        replicaCount: 0
   destination:
     server: https://kubernetes.default.svc
-    namespace: ${{values.application.split("/")[1]}}-dev
+    namespace: ${{values.application.split("/")[1]}}-prod
   syncPolicy:
     automated: 
       prune: true

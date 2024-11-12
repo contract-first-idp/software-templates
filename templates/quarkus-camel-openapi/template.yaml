@@ -1,23 +1,24 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: spring-boot-api-consumer-template
-  title: Spring Boot REST consumer
-  description: Create a simple REST consumer
+  name: quarkus-camel-openapi-template
+  title: Quarkus Camel OpenAPI
+  description: OpenAPI server and client using Camel with Quarkus (v0.9)
 spec:
   owner: backstage-admin@redhat.com
   type: service
   
   parameters:
-    - title: API consumer parameters
+    - title: API server parameters
       required:
         - component_id
         - owner
         - java_group_id
-        - java_package
         - application
         - description
         - api
+        - consumed_api
+        - consumed_api_operation
         - cluster_domain
       properties:
         component_id:
@@ -27,15 +28,26 @@ spec:
         java_group_id:
           title: Group Name
           type: string
-          description: Name for the group id, eg. (backstage in my.group)
-        java_package:
-          title: Java Package Name
-          type: string
-          description: Name for the java package. eg (package in my.package.name)
+          description: Name for the group id
+          default: com.redhat
         description:
           title: Description
           type: string
           description: Help others understand what this component does
+        deployment:
+          title: Select the deployment strategy
+          type: string
+          default: jvm
+          enum:
+            - jvm
+            - legacy-jar
+            - native
+            - native-micro
+          enumNames:
+            - 'JVM'
+            - 'JVM with legacy-jar'
+            - 'Native'
+            - 'Native Micro'
         owner:
           title: Owner
           type: string
@@ -55,15 +67,31 @@ spec:
         api:
           title: API
           type: string
+          description: The API being implemented
+          ui:field: OwnedEntityPicker
+          ui:options:
+            allowedKinds:
+            - API
+        consumed_api:
+          title: Consumed API
+          type: string
           description: The API being consumed
           ui:field: OwnedEntityPicker
           ui:options:
             allowedKinds:
             - API
+        consumed_api_operation:
+          title: Operation to invoke on the consumed API
+          type: string
+        service_registry_group_id:
+          title: Service Registry Group ID
+          type: string
+          default: com.redhat
         cluster_domain:
           title: Cluster domain
           type: string
-          description: Cluster domain (like apps.example.com)    
+          description: Cluster domain (like apps.example.com)
+          default: apps.cluster-m22mk.m22mk.sandbox2534.opentlc.com
 
   steps:
     - id: template
@@ -76,13 +104,20 @@ spec:
           component_id: ${{ parameters.component_id }}
           description: ${{ parameters.description }}
           artifact_id: ${{ parameters.component_id }}
-          folder_java_package: ${{ parameters.java_package | replace('.', '/') }}
+          folder_java_package: ${{ parameters.java_group_id | replace('.', '/') }}/${{ parameters.application.split("/")[1] }}/${{ parameters.component_id }}
           java_group_id: ${{ parameters.java_group_id }}
-          java_package: ${{ parameters.java_package }}
+          java_package: ${{ parameters.java_group_id }}.${{ parameters.application.split("/")[1] }}.${{ parameters.component_id }}
           owner: ${{ parameters.owner }}
-          destination: https://github.com/contract-first-idp/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
+          destination: https://github.com/contract-first-camel/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
+          project_slug: contract-first-camel/${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service
           application: ${{ parameters.application }}
+          service_id: ${{ parameters.component_id }}-service
+          system_label: system=${{ parameters.application.split("/")[1] }}
           api_id: ${{ parameters.api.split("/")[1] }}
+          consumed_api_id: ${{ parameters.consumed_api.split("/")[1] }}
+          consumed_api_operation: ${{ parameters.consumed_api_operation }}
+          service_registry_provider_url: https://registry-apicurio-registry.${{ parameters.cluster_domain }}
+          service_registry_group_id: ${{ parameters.service_registry_group_id }}
 
     - id: publish
       name: publish component source repository
@@ -90,7 +125,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.component_id }}
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=contract-first-camel
         repoVisibility: public
         defaultBranch: main
         deleteBranchOnMerge: true
@@ -100,13 +135,13 @@ spec:
       name: webhook creation source repository
       action: github:webhook
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-service&owner=contract-first-camel
         webhookUrl: https://webhook-${{ parameters.application.split("/")[1] }}-${{ parameters.component_id }}-el-${{ parameters.application.split("/")[1] }}-build.${{ parameters.cluster_domain }}
         webhookSecret: 'mysecret'
         events: [ 'push' ]
         active: true
         contentType: 'json'
-        insecureSsl: false    
+        insecureSsl: false
 
     - id: register
       name: Register Component
@@ -130,16 +165,17 @@ spec:
           java_package: ${{ parameters.java_package }}
           owner: ${{ parameters.owner }}
           application: ${{ parameters.application }}
-          organization: contract-first-idp
+          organization: contract-first-camel
           team: ${{ parameters.owner }}
           repo_id: ${{ parameters.component_id }}
+          deployment: ${{ parameters.deployment }}
         targetPath: ./system-gitops
 
-    - id: pull-request
+    - id: pr
       name: Open PR to System
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-idp
+        repoUrl: github.com?repo=${{ parameters.application.split("/")[1] }}-system&owner=contract-first-camel
         branchName: ${{ parameters.component_id }}-component
         title: add ${{ parameters.component_id }} component
         description: add ${{ parameters.component_id }} component
@@ -147,6 +183,8 @@ spec:
 
   output:
     links:
+      - title: Pull Request to System
+        url: ${{ steps.pr.output.remoteUrl }}
       - title: Repository
         url: ${{ steps.publish.output.remoteUrl }}
       - title: Open in catalog

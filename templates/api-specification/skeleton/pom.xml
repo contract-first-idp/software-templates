@@ -12,14 +12,11 @@
     <name>${{ values.api_id }}</name>
 
     <properties>
-        {%- if values.service_registry_provider_url %}
         <apicurio-registry-maven-plugin.version>2.6.4.Final</apicurio-registry-maven-plugin.version>
-        {%- endif %}
     </properties>
 
     <build>
         <plugins>
-            {%- if values.service_registry_provider_url %}
             <!--
             This plugin connects with the Service Registry and download
             the contracts (OpenApi) used in the project -->
@@ -49,7 +46,6 @@
                  </execution>
                 </executions>
             </plugin>
-            {%- endif %}
         </plugins>
     </build>
 </project>
