@@ -11,8 +11,8 @@
     <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-      <spring.boot-version>3.3.1</spring.boot-version>
-      <camel.spring.boot-version>4.7.0</camel.spring.boot-version>
+      <spring.boot-version>3.3.6</spring.boot-version>
+      <camel.spring.boot-version>4.8.0.redhat-00022</camel.spring.boot-version>
       <surefire.plugin.version>3.0.0-M4</surefire.plugin.version>
       <java.version>17</java.version>
       <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -23,17 +23,9 @@
       <dependencies>
         <!-- Camel BOM -->
         <dependency>
-          <groupId>org.apache.camel.springboot</groupId>
+          <groupId>com.redhat.camel.springboot.platform</groupId>
           <artifactId>camel-spring-boot-bom</artifactId>
           <version>${camel.spring.boot-version}</version>
-          <type>pom</type>
-          <scope>import</scope>
-        </dependency>
-        <!-- Spring Boot BOM -->
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-dependencies</artifactId>
-          <version>${spring.boot-version}</version>
           <type>pom</type>
           <scope>import</scope>
         </dependency>

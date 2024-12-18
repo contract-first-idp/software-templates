@@ -9,25 +9,17 @@
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring.boot.camel.version>4.7.0</spring.boot.camel.version>
-        <spring.boot-version>3.3.1</spring.boot-version>
+        <spring.boot.camel.version>4.8.0.redhat-00022</spring.boot.camel.version>
+        <spring.boot-version>3.3.6</spring.boot-version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
           <!-- Camel BOM -->
           <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
+            <groupId>com.redhat.camel.springboot.platform</groupId>
             <artifactId>camel-spring-boot-bom</artifactId>
             <version>${spring.boot.camel.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-          </dependency>
-          <!-- Spring Boot BOM -->
-          <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-dependencies</artifactId>
-            <version>${spring.boot-version}</version>
             <type>pom</type>
             <scope>import</scope>
           </dependency>
