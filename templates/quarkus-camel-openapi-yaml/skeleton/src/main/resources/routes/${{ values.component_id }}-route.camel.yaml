@@ -1,0 +1,26 @@
+  {% if values.implements_api %}
+- rest:
+    openApi:
+      missingOperation: mock
+      specification: ${{ values.api_name }}-api.json
+  {% endif %}
+  {% if values.consumes_apis %}
+- route:
+    id: sample-route
+    from:
+      uri: direct:someOperationId
+      parameters: {}
+      steps:
+        - removeHeaders:
+            id: remove-headers
+            pattern: "*"
+        - to:
+            id: to-service
+            uri: rest-openapi:${{ values.consumed_api_name }}-api.json#${{ values.consumed_api_operation }}
+            parameters:
+              basePath: /api/v1
+              host: http://${{ values.consumed_api_name }}:8080
+        - log:
+            id: log-body
+            message: ${body}
+  {% endif %}

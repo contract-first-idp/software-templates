@@ -1,0 +1,137 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: openapi-specification-template
+  title: OpenAPI Specification
+  description: Create an OpenAPI specification
+spec:
+  owner: backstage-admins
+  type: api
+
+  parameters:
+    - title: API server parameters
+      required:
+        - api_id
+        - owner
+        - system
+        - description
+      properties:
+        api_id:
+          title: Name
+          type: string
+          description: Unique name of the API
+        description:
+          title: Description
+          type: string
+          description: API description
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the API
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds: 
+              - Group
+        system:
+          title: System
+          type: string
+          description: System to which this API belongs
+          ui:field: EntityPicker
+          ui:options:
+            allowedKinds:
+            - System
+
+  steps:
+
+    - id: fetch-domain
+      name: fetch domain context
+      action: catalog:fetch
+      input:
+        entityRef: domain:default/demo
+
+    - id: fetch-system
+      name: fetch system context
+      action: catalog:fetch
+      input:
+        entityRef: ${{ parameters.system }}
+
+
+    - id: api-template
+      name: render API specification
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          api_id: ${{ parameters.api_id }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+          git_repo_url: https://github.com/${{ steps['fetch-domain'].output.entity.metadata.labels['git-org'] }}/${{ steps['fetch-system'].output.entity.metadata.name }}-${{ parameters.api_id }}-api
+          system_name: ${{ steps['fetch-system'].output.entity.metadata.name }}
+          service_registry_provider_url: https://registry-apicurio-registry.${{ steps['fetch-domain'].output.entity.metadata.labels['cluster-domain'] }}
+          service_registry_group_id: ${{ steps['fetch-domain'].output.entity.metadata.labels['artifact-group'] }}.${{ steps['fetch-system'].output.entity.metadata.name | replace('-', '') }}
+          mock_provider_url: https://microcks-microcks.${{ steps['fetch-domain'].output.entity.metadata.labels['cluster-domain'] }}
+
+    - id: publish
+      name: publish API specification repository
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.api_id }}
+        repoUrl: github.com?repo=${{ steps['fetch-system'].output.entity.metadata.name }}-${{ parameters.api_id }}-api&owner=${{ steps['fetch-domain'].output.entity.metadata.labels['git-org'] }}
+        repoVisibility: public
+        defaultBranch: main
+        deleteBranchOnMerge: true
+        protectDefaultBranch: false
+
+    - id: webhook
+      name: webhook creation source repository
+      action: github:webhook
+      input: 
+        repoUrl: github.com?repo=${{ steps['fetch-system'].output.entity.metadata.name }}-${{ parameters.api_id }}-api&owner=${{ steps['fetch-domain'].output.entity.metadata.labels['git-org'] }}
+        webhookUrl: https://webhook-${{ steps['fetch-system'].output.entity.metadata.name }}-${{ parameters.api_id }}-api-el-${{ steps['fetch-system'].output.entity.metadata.name }}-build.${{ steps['fetch-domain'].output.entity.metadata.labels['cluster-domain'] }}
+        webhookSecret: 'mysecret'
+        events: ['push']
+        active: true
+        contentType: 'json'
+        insecureSsl: true
+
+    - id: register
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: '${{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
+
+    - id: system-template
+      name: render system pull request
+      action: fetch:template
+      input:
+        url: ./system
+        values:
+          git_org: ${{ steps['fetch-domain'].output.entity.metadata.labels['git-org'] }}
+          api_id: ${{ parameters.api_id }}
+          system_name: ${{ steps['fetch-system'].output.entity.metadata.name }}
+          service_registry_provider_url: https://registry-apicurio-registry.${{ steps['fetch-domain'].output.entity.metadata.labels['cluster-domain'] }}
+          service_registry_group_id: ${{ steps['fetch-domain'].output.entity.metadata.labels['artifact-group'] }}.${{ steps['fetch-system'].output.entity.metadata.name | replace('-', '') }}
+          mock_provider_url: https://microcks-microcks.${{ steps['fetch-domain'].output.entity.metadata.labels['cluster-domain'] }}
+        targetPath: ./system-gitops
+
+    - id: pr
+      name: open system pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?repo=${{ steps['fetch-system'].output.entity.metadata.name }}-system&owner=${{ steps['fetch-domain'].output.entity.metadata.labels['git-org'] }}
+        branchName: ${{ parameters.api_id }}-api
+        title: add ${{ parameters.api_id }} API
+        description: add ${{ parameters.api_id}} API
+        sourcePath: ./system-gitops
+
+  output:
+    links:
+      - title: Pull Request to System
+        url: ${{ steps.pr.output.remoteUrl }}
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
