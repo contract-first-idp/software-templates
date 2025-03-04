@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ${{ values.system_name }}-${{ values.component_id }}-qa
+  name: ${{ values.system_name }}-${{ values.component_id }}-prod
   namespace: openshift-gitops
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -12,18 +12,18 @@ spec:
   source:
     repoURL: https://github.com/${{ values.git_org }}/developer-charts
     targetRevision: HEAD
-    path: quarkus-application
+    path: spring-boot-application
     helm:
       values: |
         system: ${{ values.system_name }}
         component: ${{ values.component_id }}
-        environment: qa
+        environment: prod
         image:
           tag: latest
         replicaCount: 0
   destination:
     server: https://kubernetes.default.svc
-    namespace: ${{ values.system_name }}-qa
+    namespace: ${{ values.system_name }}-prod
   syncPolicy:
     automated: 
       prune: true

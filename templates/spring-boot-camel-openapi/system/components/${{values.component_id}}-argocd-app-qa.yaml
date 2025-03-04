@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: https://github.com/${{ values.git_org }}/developer-charts
     targetRevision: HEAD
-    path: quarkus-application
+    path: spring-boot-application
     helm:
       values: |
         system: ${{ values.system_name }}

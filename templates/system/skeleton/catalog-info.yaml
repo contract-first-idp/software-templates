@@ -1,7 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
-  name: ${{values.application_id}}
+  name: ${{values.system_name}}
   description: ${{values.description}}
 spec:
+  domain: demo
   owner: ${{values.owner}}

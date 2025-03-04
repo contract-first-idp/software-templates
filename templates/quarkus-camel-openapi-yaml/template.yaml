@@ -1,9 +1,9 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: quarkus-camel-openapi-template
-  title: Quarkus Camel OpenAPI (Java DSL)
-  description: OpenAPI server/client with Camel (Java DSL) on Quarkus
+  name: quarkus-camel-openapi-yaml-template
+  title: Quarkus Camel OpenAPI (YAML DSL)
+  description: OpenAPI server/client with Camel (YAML DSL) on Quarkus (Kaoto-compatible)
 spec:
   owner: backstage-admins
   type: service
@@ -146,6 +146,7 @@ spec:
       action: fetch:template
       input:
         url: ./skeleton
+        copyWithoutRender: []
         values:
           component_id: ${{ parameters.component_id }}
           description: ${{ parameters.description }}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>${{ values.service_registry_group_id }}</groupId>
+    <artifactId>${{ values.api_id }}</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>${{ values.api_id }}</name>
+
+    <properties>
+        <apicurio-registry-maven-plugin.version>2.6.4.Final</apicurio-registry-maven-plugin.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <!--
+            This plugin connects with the Service Registry and download
+            the contracts (OpenApi) used in the project -->
+            <plugin>
+                <groupId>io.apicurio</groupId>
+                <artifactId>apicurio-registry-maven-plugin</artifactId>
+                <version>${apicurio-registry-maven-plugin.version}</version>
+                <executions>
+                  <execution>
+                    <phase>generate-sources</phase>
+                    <goals>
+                      <goal>register</goal> 
+                    </goals>
+                    <configuration>
+                      <registryUrl>${{ values.service_registry_provider_url }}</registryUrl> 
+                      <artifacts>
+                        <artifact>
+                          <groupId>${{ values.service_registry_group_id }}</groupId>
+                          <artifactId>${{ values.api_id }}</artifactId>
+                          <type>OPENAPI</type>
+                          <file>specification.yaml</file>
+                          <ifExists>RETURN_OR_UPDATE</ifExists>
+                        </artifact>
+                      </artifacts>
+                      <existingReferences/>
+                   </configuration>
+                 </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

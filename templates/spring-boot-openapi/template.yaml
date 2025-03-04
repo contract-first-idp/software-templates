@@ -1,19 +1,18 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: quarkus-camel-openapi-template
-  title: Quarkus Camel OpenAPI (Java DSL)
-  description: OpenAPI server/client with Camel (Java DSL) on Quarkus
+  name: spring-boot-openapi-template
+  title: Spring Boot OpenAPI
+  description: OpenAPI server/client with Spring Boot
 spec:
   owner: backstage-admins
   type: service
-  
+ 
   parameters:
     - title: General Settings
       required:
         - component_id
         - description
-        - deployment
         - owner
         - system
       properties:
@@ -25,20 +24,6 @@ spec:
           title: Description
           type: string
           description: Help others understand what this component does
-        deployment:
-          title: Select the deployment strategy
-          type: string
-          default: jvm
-          enum:
-            - jvm
-            - legacy-jar
-            - native
-            - native-micro
-          enumNames:
-            - JVM
-            - JVM with legacy-jar
-            - Native
-            - Native Micro
         owner:
           title: Owner
           type: string
@@ -201,12 +186,10 @@ spec:
       action: fetch:template
       input:
         url: ./system
-        copyWithoutRender: []
         values:
           component_id: ${{ parameters.component_id }}
           owner: ${{ parameters.owner }}
           system_name: ${{ steps['fetch-system'].output.entity.metadata.name }}
-          deployment: ${{ parameters.deployment }}
           git_org: ${{ steps['fetch-domain'].output.entity.metadata.labels['git-org'] }}
         targetPath: ./system-gitops
 

@@ -3,26 +3,26 @@ kind: Template
 metadata:
   name: system-template
   title: System Template
-  description: Create a System to contain a set of application Components, APIs, and Resources (v0.3)
+  description: Create a System to contain a set of application Components, APIs, and Resources
 spec:
-  owner: backstage-admin@redhat.com
+  owner: backstage-admins
   type: system
 
   parameters:
     - title: Provide information on this application
       required:
-        - application_id
+        - system_name
         - owner
         - description
       properties:
-        application_id:
+        system_name:
           title: Name
           type: string
           description: Unique name of this application
         description:
           title: Description
           type: string
-          description: Help others understand what this application is for.
+          description: System description
         owner:
           title: Owner
           type: string
@@ -33,24 +33,30 @@ spec:
               - Group
   steps:
 
-    - id: template-system
+    - id: fetch-domain
+      name: fetch domain context
+      action: catalog:fetch
+      input:
+        entityRef: domain:default/demo
+
+    - id: system-template
       name: render system mainfiest
       action: fetch:template
       input:
         url: ./skeleton
-        copyWithoutRender: []
         values:
-          application_id: ${{ parameters.application_id }}
+          system_name: ${{ parameters.system_name }}
           description: ${{ parameters.description }}
           owner: ${{ parameters.owner }}
+          git_org: ${{ steps['fetch-domain'].output.entity.metadata.labels['git-org'] }}
 
     - id: publish
       name: publish system manifest repository
       action: publish:github
       input:
         allowedHosts: ['github.com']
-        description: GitOps manifest for ${{ parameters.application_id }}
-        repoUrl: github.com?repo=${{ parameters.application_id }}-system&owner=contract-first-idp
+        description: GitOps manifest for ${{ parameters.system_name }}
+        repoUrl: github.com?repo=${{ parameters.system_name }}-system&owner=${{ steps['fetch-domain'].output.entity.metadata.labels['git-org'] }}
         repoVisibility: public
         defaultBranch: main
         deleteBranchOnMerge: true
@@ -63,26 +69,26 @@ spec:
         repoContentsUrl: '${{ steps.publish.output.repoContentsUrl }}'
         catalogInfoPath: '/catalog-info.yaml'
 
-    - id: template-domain-pull-request
+    - id: domain-template
       name: render domain pull request
       action: fetch:template
       input:
         url: ./domain
-        copyWithoutRender: []
         values:
-          application_id: ${{ parameters.application_id }}
+          system_name: ${{ parameters.system_name }}
           description: ${{ parameters.description }}
           owner: ${{ parameters.owner }}
+          git_org: ${{ steps['fetch-domain'].output.entity.metadata.labels['git-org'] }}
         targetPath: ./domain-gitops  
 
     - id: pr
       name: open domain pull request
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?repo=demo-domain&owner=contract-first-idp
-        branchName: ${{ parameters.application_id }}
-        title: add ${{ parameters.application_id }} system
-        description: add ${{ parameters.application_id }} system
+        repoUrl: github.com?repo=demo-domain&owner=${{ steps['fetch-domain'].output.entity.metadata.labels['git-org'] }}
+        branchName: ${{ parameters.system_name }}
+        title: add ${{ parameters.system_name }} system
+        description: add ${{ parameters.system_name }} system
         sourcePath: ./domain-gitops
 
   output:
