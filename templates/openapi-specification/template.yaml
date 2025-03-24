@@ -15,6 +15,7 @@ spec:
         - owner
         - system
         - description
+        - specification_content
       properties:
         api_id:
           title: Name
@@ -40,6 +41,12 @@ spec:
           ui:options:
             allowedKinds:
             - System
+        specification_content:
+          title: Paths and Schemas
+          type: string
+          description: OpenAPI Content such as paths and schemas if already available
+          ui:widget: textarea
+          default: "paths: {}\nschemas: {}"
 
   steps:
 
@@ -70,6 +77,7 @@ spec:
           service_registry_provider_url: https://registry-apicurio-registry.${{ steps['fetch-domain'].output.entity.metadata.labels['cluster-domain'] }}
           service_registry_group_id: ${{ steps['fetch-domain'].output.entity.metadata.labels['artifact-group'] }}.${{ steps['fetch-system'].output.entity.metadata.name | replace('-', '') }}
           mock_provider_url: https://microcks-microcks.${{ steps['fetch-domain'].output.entity.metadata.labels['cluster-domain'] }}
+          specification_content: ${{ parameters.specification_content }}
 
     - id: publish
       name: publish API specification repository

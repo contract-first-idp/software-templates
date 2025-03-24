@@ -7,4 +7,4 @@ info:
 servers:
   - url: "http://localhost:8080"
   - url: "${{ values.mock_provider_url }}/rest/${{ values.api_id }}/v1"
-paths: {}
+${{ values.specification_content }}
