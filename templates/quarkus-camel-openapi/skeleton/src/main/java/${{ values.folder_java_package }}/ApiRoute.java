@@ -14,13 +14,13 @@ public class ApiRoute extends RouteBuilder {
                 .bindingPackageScan("${{ values.java_package }}");
         
         {% if values.implements_api %}
-        rest().openApi().specification("${{ values.api_name }}-api.json").missingOperation("ignore");
+        rest().openApi().specification("${{ values.api_name }}-api.yaml").missingOperation("ignore");
         {% endif %}
 
         {% if values.consumes_apis %}
         from("direct:sampleOperationId")
                 .removeHeaders("*")
-                .to("rest-openapi:${{ values.consumed_api_name }}-api.json#${{ values.consumed_api_operation }}?host={{openapi.client.${{ values.consumed_api_name }}.host}}");
+                .to("rest-openapi:${{ values.consumed_api_name }}-api.yaml#${{ values.consumed_api_operation }}?host={{openapi.client.${{ values.consumed_api_name }}.host}}");
         {% endif %}
     }
 }

@@ -173,7 +173,7 @@
                   <artifact>
                       <groupId>${{ values.service_registry_group_id }}</groupId>
                       <artifactId>${{ values.api_name }}</artifactId>
-                      <file>${project.basedir}/src/main/openapi/${{ values.api_name }}-api.json</file>
+                      <file>${project.basedir}/src/main/openapi/${{ values.api_name }}-api.yaml</file>
                       <overwrite>true</overwrite>
                   </artifact>
                   {% endif %}
@@ -181,7 +181,7 @@
                   <artifact>
                       <groupId>${{ values.service_registry_group_id }}</groupId>
                       <artifactId>${{ values.consumed_api_name }}</artifactId>
-                      <file>${project.basedir}/src/main/openapi/${{ values.consumed_api_name }}-api.json</file>
+                      <file>${project.basedir}/src/main/openapi/${{ values.consumed_api_name }}-api.yaml</file>
                       <overwrite>true</overwrite>
                   </artifact>
                   {% endif %}
