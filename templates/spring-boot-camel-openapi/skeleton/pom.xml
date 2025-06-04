@@ -11,8 +11,8 @@
     <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-      <spring.boot-version>3.3.6</spring.boot-version>
-      <camel.spring.boot-version>4.8.0.redhat-00022</camel.spring.boot-version>
+      <spring.boot-version>3.4.5</spring.boot-version>
+      <camel.spring.boot-version>4.10.3.redhat-00019</camel.spring.boot-version>
       <surefire.plugin.version>3.0.0-M4</surefire.plugin.version>
       <java.version>17</java.version>
       <maven.compiler.source>${java.version}</maven.compiler.source>
