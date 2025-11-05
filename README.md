@@ -26,6 +26,30 @@ Backstage Golden Paths are driven by templates, but since a System itself is not
 
 ![GitOps Hierarchy](media/gitops-hierarchy.png)
 
+## Testing the Templates
+
+The repository includes a small pytest suite that validates each template
+definition. The tests ensure the templates are valid YAML, verify that required
+parameters are declared, confirm that `fetch:template` steps only reference
+local skeleton directories that actually exist, and exercise each skeleton with
+representative data to prove Backstage can render the templates end-to-end.
+Install the dependencies and run the tests with:
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+To exercise the template rendering checks you will also need the
+Backstage scaffolder backend package available to Node.js. Install it with:
+
+```bash
+npm install --no-save @backstage/plugin-scaffolder-backend
+```
+
+The render tests automatically skip when the package or Node.js are not
+available.
+
 ### API Specification Golden Path
 
 Architects will use these Golden Paths to introduce a new _API_ entities and associate them with an existing _System_.
