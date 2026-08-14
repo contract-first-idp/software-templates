@@ -1,0 +1,12 @@
+profile: postgresql
+resourceName: ${{ values.resourceName }}
+implementation:
+  path: charts/resource/postgresql
+postgresVersion: ${{ values.postgresVersion }}
+instances:
+  replicas: ${{ values.replicaCount }}
+storage:
+  storageClass: ${{ values.storageClass }}
+user:
+  name: ${{ values.userName }}
+  database: ${{ values.databaseName }}

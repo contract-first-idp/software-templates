@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: storefront
+  namespace: cf-idp-integration-tests
+  title: '[TEST] Storefront Consumer System'
+  description: Consumer System used only by cross-System Component integration tests.
+spec:
+  owner: group:default/domain-maintainers
+  domain: domain:cf-idp-integration-tests/cf-idp-integration-tests
+  groupId: io.github.cfidp.storefront

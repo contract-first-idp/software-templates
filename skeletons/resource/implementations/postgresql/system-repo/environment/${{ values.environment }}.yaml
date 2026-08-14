@@ -1,0 +1,4 @@
+profile: postgresql
+resourceName: ${{ values.resourceName }}
+storage:
+  size: ${{ values.storageSize }}

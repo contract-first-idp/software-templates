@@ -1,0 +1,3 @@
+componentRef: ${TEST_COMPONENT_REF}
+targetEnvironment: test
+releaseVersion: v1.7.3

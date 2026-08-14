@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: cf-idp-integration-tests
+  annotations:
+    contract-first-idp.github.io/scm-provider: github
+    contract-first-idp.github.io/scm-host: github.com
+    contract-first-idp.github.io/domain-org: contract-first-idp
+    contract-first-idp.github.io/domain-repo: software-templates
+spec:
+  platformTarget: resource:default/workshop
+  groupId: io.github.cfidp
+  environments:
+    order: [sandbox, stage, production]
+    build: sandbox
+    definitions:
+      sandbox: {namespaceSuffix: -sandbox}
+      stage: {namespaceSuffix: -stage}
+      production: {namespaceSuffix: ''}

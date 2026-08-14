@@ -1,0 +1,14 @@
+replicas: 1
+image:
+  pullPolicy: ${{ 'Always' if values.environment == values.buildEnvironment else 'IfNotPresent' }}
+route:
+  enabled: true
+runtime:
+  health:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+  resources:
+    requests: {cpu: 100m, memory: 256Mi}
+    limits: {cpu: 500m, memory: 1Gi}
+  envFromSecretNames: []
+  env: []

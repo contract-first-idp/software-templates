@@ -1,0 +1,174 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: tenant-domain-golden-path
+  title: Create Tenant Domain
+  description: Create a portable tenant Domain repository and request admission to a platform target.
+  annotations: {backstage-gitea.io/github-compatible: 'true'}
+  tags: [contract-first, domain, tenant]
+spec:
+  owner: group:default/platform-maintainers
+  type: domain
+  parameters:
+    - title: Tenant identity and platform target
+      required: [organization, domainName, title, description, groupId, platformTarget]
+      properties:
+        organization:
+          title: GitHub organization
+          type: string
+          default: cf-idp-tenant
+          pattern: '^([a-z][a-z0-9]*)(-[a-z0-9]+)*$'
+        domainName:
+          title: Domain name
+          type: string
+          default: cf-idp-tenant
+          pattern: '^([a-z][a-z0-9]*)(-[a-z0-9]+)*$'
+        title: {title: Display title, type: string, default: Contract-First IDP Tenant}
+        description: {title: Description, type: string, default: Tenant Domain for Contract-First IDP workloads.}
+        groupId:
+          title: Group ID base
+          type: string
+          default: io.github.cfidp
+          pattern: '^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$'
+        platformTarget:
+          title: Platform target
+          type: string
+          ui:field: EntityPicker
+          ui:options:
+            allowArbitraryValues: false
+            catalogFilter:
+              - kind: Resource
+                spec.type: contract-first-idp-target
+    - title: Environment lifecycle
+      required: [environments, buildEnvironment]
+      properties:
+        environments:
+          title: Ordered environments
+          type: array
+          minItems: 1
+          default:
+            - {name: dev, namespaceSuffix: -dev}
+            - {name: test, namespaceSuffix: -test}
+            - {name: prod, namespaceSuffix: ''}
+          items:
+            type: object
+            required: [name]
+            properties:
+              name:
+                title: Environment name
+                type: string
+                pattern: '^([a-z][a-z0-9]*)(-[a-z0-9]+)*$'
+              namespaceSuffix: {title: Namespace suffix, type: string}
+        buildEnvironment:
+          title: Build environment
+          type: string
+          default: dev
+          pattern: '^([a-z][a-z0-9]*)(-[a-z0-9]+)*$'
+          description: Must name the first environment in the ordered lifecycle.
+  steps:
+    - id: fetchTarget
+      name: Fetch platform target
+      action: catalog:fetch
+      input:
+        entityRef: ${{ parameters.platformTarget }}
+        defaultKind: Resource
+        defaultNamespace: default
+    - id: renderDomain
+      name: Render portable tenant Domain repository
+      action: fetch:template
+      input:
+        url: ../../skeletons/domain/base
+        targetPath: domain-repo
+        values:
+          organization: ${{ parameters.organization }}
+          domainName: ${{ parameters.domainName }}
+          repositoryName: ${{ parameters.domainName }}-domain
+          title: ${{ parameters.title }}
+          description: ${{ parameters.description }}
+          groupId: ${{ parameters.groupId }}
+          platformTarget: ${{ parameters.platformTarget }}
+          environments: ${{ parameters.environments }}
+          buildEnvironment: ${{ parameters.buildEnvironment }}
+          scmProvider: github
+          tenantScmHost: github.com
+    - id: renderAdmission
+      name: Render platform admission request
+      action: fetch:template
+      input:
+        url: ../../skeletons/domain/platform-admission
+        targetPath: platform-pr/${{ steps.fetchTarget.output.entity.spec.platform.tenantAdmission.path }}/${{ parameters.domainName }}
+        values:
+          domainName: ${{ parameters.domainName }}
+          organization: ${{ parameters.organization }}
+          repositoryName: ${{ parameters.domainName }}-domain
+          tenantScmHost: github.com
+          platformRepositoryHost: ${{ steps.fetchTarget.output.entity.spec.platform.configuration.host }}
+          platformRepositoryOrganization: ${{ steps.fetchTarget.output.entity.spec.platform.configuration.organization }}
+          platformRepositoryName: ${{ steps.fetchTarget.output.entity.spec.platform.configuration.repository }}
+          platformRepositoryRevision: ${{ steps.fetchTarget.output.entity.spec.platform.configuration.revision }}
+          platformTargetValuesPath: ${{ steps.fetchTarget.output.entity.spec.platform.configuration.valuesPath }}
+          developerChartsRepositoryUrl: ${{ steps.fetchTarget.output.entity.spec.platform.dependencies.developerCharts.repositoryUrl }}
+          developerChartsRevision: ${{ steps.fetchTarget.output.entity.spec.platform.dependencies.developerCharts.revision }}
+          argocdNamespace: ${{ steps.fetchTarget.output.entity.spec.platform.argocd.namespace }}
+          keycloakNamespace: ${{ steps.fetchTarget.output.entity.spec.platform.security.keycloak.namespace }}
+          secretsNamespace: ${{ steps.fetchTarget.output.entity.spec.platform.security.secrets.namespace }}
+          destinationServer: ${{ steps.fetchTarget.output.entity.spec.platform.argocd.destinationServer }}
+    - id: publish
+      name: Publish tenant Domain repository
+      action: publish:github
+      input:
+        sourcePath: domain-repo
+        repoUrl: github.com?owner=${{ parameters.organization }}&repo=${{ parameters.domainName }}-domain
+        description: ${{ parameters.description }}
+        defaultBranch: main
+        repoVisibility: public
+        protectDefaultBranch: true
+        requiredApprovingReviewCount: 0
+        protectEnforceAdmins: true
+        collaborators:
+          - {team: domain-maintainers, access: maintain}
+          - {team: domain-contributors, access: push}
+          - {team: domain-viewers, access: pull}
+    - id: applicationWebhook
+      name: Notify Argo CD on Domain changes
+      action: github:webhook
+      input:
+        repoUrl: github.com?owner=${{ parameters.organization }}&repo=${{ parameters.domainName }}-domain
+        webhookUrl: ${{ steps.fetchTarget.output.entity.spec.platform.argocd.webhooks.application }}
+        events: [push]
+        active: true
+        contentType: json
+        insecureSsl: false
+    - id: applicationSetWebhook
+      name: Notify ApplicationSet on Domain changes
+      action: github:webhook
+      input:
+        repoUrl: github.com?owner=${{ parameters.organization }}&repo=${{ parameters.domainName }}-domain
+        webhookUrl: ${{ steps.fetchTarget.output.entity.spec.platform.argocd.webhooks.applicationSet }}
+        events: [push]
+        active: true
+        contentType: json
+        insecureSsl: false
+    - id: register
+      name: Register tenant Domain
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+    - id: platformPr
+      name: Open platform admission pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: ${{ steps.fetchTarget.output.entity.spec.platform.configuration.host }}?owner=${{ steps.fetchTarget.output.entity.spec.platform.configuration.organization }}&repo=${{ steps.fetchTarget.output.entity.spec.platform.configuration.repository }}
+        branchName: admit-${{ parameters.domainName }}-domain
+        title: Admit Domain ${{ parameters.domainName }}
+        description: Add the self-contained admission resources for Domain ${{ parameters.domainName }}.
+        sourcePath: platform-pr
+        targetBranchName: ${{ steps.fetchTarget.output.entity.spec.platform.tenantAdmission.branch }}
+        createWhenEmpty: false
+  output:
+    links:
+      - {title: Domain repository, url: '${{ steps.publish.output.remoteUrl }}'}
+      - title: Domain catalog entity
+        icon: catalog
+        entityRef: domain:default/${{ parameters.domainName }}
+      - {title: Platform admission pull request, url: '${{ steps.platformPr.output.remoteUrl }}'}

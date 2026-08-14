@@ -1,0 +1,35 @@
+name: Deterministic tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: test/package-lock.json
+      - name: Print test tool versions
+        run: |
+          node --version
+          npm --version
+      - name: Run deterministic tests
+        if: github.ref_type != 'tag'
+        run: make test
+      - name: Validate immutable release tag
+        if: github.ref_type == 'tag'
+        run: make release-check
+      - run: git diff --check

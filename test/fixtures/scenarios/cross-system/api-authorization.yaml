@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: authorization
+  namespace: payments
+  title: '[TEST] Payments Authorization API'
+  description: Cross-System contract used only by Component integration tests.
+  annotations:
+    contract-first-idp.github.io/schema-registry-group-id: io.github.cfidp.payments
+    contract-first-idp.github.io/schema-registry-artifact-id: authorization
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:default/domain-maintainers
+  system: system:payments/payments
+  definition:
+    $text: ./contracts/authorization.yaml

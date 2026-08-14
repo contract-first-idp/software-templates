@@ -1,0 +1,101 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: component-promotion
+  title: Promote Component
+  description: Propose an immutable Component release for an ordered non-build environment.
+  annotations: {backstage-gitea.io/github-compatible: 'true'}
+  tags: [contract-first, promotion, component]
+spec:
+  owner: group:default/platform-maintainers
+  type: service
+  parameters:
+    - title: Promotion
+      required: [componentRef, targetEnvironment, releaseVersion]
+      properties:
+        componentRef:
+          title: Component
+          type: string
+          ui:field: EntityPicker
+          ui:options: {allowArbitraryValues: false, catalogFilter: [{kind: Component}]}
+        targetEnvironment:
+          title: Target environment
+          type: string
+          pattern: '^([a-z][a-z0-9]*)(-[a-z0-9]+)*$'
+          description: Ordered non-build environment declared by the parent Domain.
+        releaseVersion:
+          title: Component release version
+          description: Existing immutable human release in the immediately preceding environment, such as v1.7.3.
+          type: string
+          pattern: '^v[0-9]+(\.[0-9]+){0,2}(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$'
+  steps:
+    - id: fetchComponent
+      name: Fetch Component
+      action: catalog:fetch
+      input: {entityRef: '${{ parameters.componentRef }}'}
+    - id: fetchSystem
+      name: Resolve parent System
+      action: catalog:fetch
+      input:
+        entityRef: ${{ steps.fetchComponent.output.entity.spec.system }}
+        defaultKind: System
+        defaultNamespace: default
+    - id: fetchDomain
+      name: Fetch System Domain
+      action: catalog:fetch
+      input:
+        entityRef: ${{ steps.fetchSystem.output.entity.spec.domain }}
+        defaultKind: Domain
+        defaultNamespace: default
+    - id: reportInvalidTarget
+      name: Report valid promotion targets
+      if: >-
+        ${{ not (
+          parameters.targetEnvironment
+          in steps.fetchDomain.output.entity.spec.environments.order
+        ) or
+        parameters.targetEnvironment
+        == steps.fetchDomain.output.entity.spec.environments.build }}
+      action: debug:log
+      input:
+        message: >-
+          Invalid promotion target "${{ parameters.targetEnvironment }}".
+          Declared environments:
+          ${{ steps.fetchDomain.output.entity.spec.environments.order
+              | join(', ') }}.
+          The build environment
+          "${{ steps.fetchDomain.output.entity.spec.environments.build }}"
+          is not a promotion target.
+    - id: rejectInvalidTarget
+      name: Reject invalid promotion target
+      if: >-
+        ${{ not (
+          parameters.targetEnvironment
+          in steps.fetchDomain.output.entity.spec.environments.order
+        ) or
+        parameters.targetEnvironment
+        == steps.fetchDomain.output.entity.spec.environments.build }}
+      action: catalog:fetch
+      input: {}
+    - id: renderRelease
+      name: Render target release state
+      action: fetch:template
+      input:
+        url: ../../skeletons/component/promotion
+        targetPath: system-pr/components/${{ steps.fetchComponent.output.entity.metadata.name }}/releases
+        values:
+          targetEnvironment: ${{ parameters.targetEnvironment }}
+          releaseVersion: ${{ parameters.releaseVersion }}
+    - id: promotionPr
+      name: Open promotion pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}?owner=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}&repo=${{ steps.fetchSystem.output.entity.metadata.annotations['contract-first-idp.github.io/repository-name'] or (steps.fetchSystem.output.entity.metadata.name + '-system') }}
+        branchName: promote-${{ steps.fetchComponent.output.entity.metadata.name }}-to-${{ parameters.targetEnvironment }}
+        title: Promote ${{ steps.fetchComponent.output.entity.metadata.name }} ${{ parameters.releaseVersion }} to ${{ parameters.targetEnvironment }}
+        description: Propose artifact-only release state. After merge, GitOps starts target-local asynchronous image promotion.
+        sourcePath: system-pr
+        createWhenEmpty: false
+  output:
+    links:
+      - {title: Promotion pull request, url: '${{ steps.promotionPr.output.remoteUrl }}'}

@@ -1,0 +1,243 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-parent</artifactId>
+      <version>3.5.16</version>
+      <relativePath/>
+    </parent>
+
+    <groupId>${{ values.group_id }}</groupId>
+    <artifactId>${{ values.component_id }}</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>${{ values.component_id }}</name>
+
+    <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+      <camel.spring.boot-version>4.18.1.redhat-00029</camel.spring.boot-version>
+      <java.version>21</java.version>
+      <maven.compiler.release>${java.version}</maven.compiler.release>
+      <apicurio.registry.maven.plugin.version>3.2.5.redhat-00004</apicurio.registry.maven.plugin.version>
+      <schema.registry.api.url>${{ values.schema_registry_api_url }}</schema.registry.api.url>
+    </properties>
+
+    <dependencyManagement>
+      <dependencies>
+        <!-- Camel BOM -->
+        <dependency>
+          <groupId>com.redhat.camel.springboot.platform</groupId>
+          <artifactId>camel-spring-boot-bom</artifactId>
+          <version>${camel.spring.boot-version}</version>
+          <type>pom</type>
+          <scope>import</scope>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+
+      <!-- Spring Boot -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-undertow</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-spring-boot-starter</artifactId>
+      </dependency>
+
+      <!-- Camel Contract First dependencies -->
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-platform-http-starter</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-rest-openapi-starter</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-undertow-starter</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-jackson-starter</artifactId>
+      </dependency>
+
+      <!-- Camel Monitoring dependencies -->
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-micrometer-starter</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-opentelemetry2-starter</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-controlbus-starter</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-prometheus</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-openapi-java-starter</artifactId>
+      </dependency>
+
+      <!--
+      This dependency is mandatory for enabling Camel management
+      via JMX / Hawtio.
+      -->
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-management-starter</artifactId>
+      </dependency>
+      <!--
+      This dependency is required for viewing Camel routes source XML.
+      -->
+      <dependency>
+        <groupId>org.apache.camel.springboot</groupId>
+        <artifactId>camel-spring-boot-xml-starter</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.openapitools</groupId>
+        <artifactId>jackson-databind-nullable</artifactId>
+        <version>0.2.6</version>
+      </dependency>
+
+      <!-- Test -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-test-spring-junit5</artifactId>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+
+    <build>
+      <resources>
+        <resource>
+          <directory>${project.build.directory}/generated-resources/openapi</directory>
+        </resource>
+        <resource>
+          <directory>src/main/resources</directory>
+        </resource>
+      </resources>
+
+      <plugins>
+        {%- if values.provided_api or values.consumed_apis | length > 0 %}
+        <plugin>
+          <groupId>io.apicurio</groupId>
+          <artifactId>apicurio-registry-maven-plugin</artifactId>
+          <version>${apicurio.registry.maven.plugin.version}</version>
+          <executions>
+            <execution>
+              <id>download-openapi-contracts</id>
+              <phase>initialize</phase>
+              <goals><goal>download</goal></goals>
+              <configuration>
+                <registryUrl>${schema.registry.api.url}</registryUrl>
+                <artifacts>
+                  {%- if values.provided_api %}
+                  <artifact>
+                    <groupId>${{ values.provided_api.registry_group_id }}</groupId>
+                    <artifactId>${{ values.provided_api.registry_artifact_id }}</artifactId>
+                    {%- if values.provided_api.version != 'latest' %}
+                    <version>${{ values.provided_api.version }}</version>
+                    {%- endif %}
+                    <file>${project.build.directory}/generated-resources/openapi/${{ values.provided_api.contract_file }}</file>
+                    <overwrite>true</overwrite>
+                  </artifact>
+                  {%- endif %}
+                  {%- for consumed_api in values.consumed_apis %}
+                  <artifact>
+                    <groupId>${{ consumed_api.registry_group_id }}</groupId>
+                    <artifactId>${{ consumed_api.registry_artifact_id }}</artifactId>
+                    {%- if consumed_api.version != 'latest' %}
+                    <version>${{ consumed_api.version }}</version>
+                    {%- endif %}
+                    <file>${project.build.directory}/generated-resources/openapi/${{ consumed_api.contract_file }}</file>
+                    <overwrite>true</overwrite>
+                  </artifact>
+                  {%- endfor %}
+                </artifacts>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        {%- endif %}
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <release>${java.version}</release>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+      </plugins>
+    </build>
+    <profiles>
+      <profile>
+        <id>camel-debug</id>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-debug-starter</artifactId>
+          </dependency>
+        </dependencies>
+      </profile>
+    </profiles>
+    <repositories>
+        <repository>
+            <id>redhat-ga</id>
+            <url>https://maven.repository.redhat.com/ga</url>
+            <name>Red Hat GA</name>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>redhat-ga</id>
+            <url>https://maven.repository.redhat.com/ga</url>
+            <name>Red Hat GA</name>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+</project>

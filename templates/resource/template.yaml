@@ -1,0 +1,154 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: resource-golden-path
+  title: Resource Golden Path
+  description: Create a Resource repository and prepare its System-owned desired state across the Domain lifecycle.
+  annotations: {backstage-gitea.io/github-compatible: 'true'}
+  tags: [contract-first, resource]
+spec:
+  owner: group:default/platform-maintainers
+  type: resource
+  parameters:
+    - title: Resource
+      required: [profile, resourceName, systemRef]
+      properties:
+        profile:
+          title: Resource profile
+          type: string
+          default: postgresql
+          enum: [postgresql]
+          enumNames: [PostgreSQL]
+        resourceName: {title: Resource name, type: string, pattern: '^([a-z][a-z0-9]*)(-[a-z0-9]+)*$'}
+        systemRef:
+          title: System
+          type: string
+          ui:field: EntityPicker
+          ui:options: {allowArbitraryValues: false, catalogFilter: [{kind: System}]}
+      dependencies:
+        profile:
+          oneOf:
+            - properties:
+                profile: {const: postgresql}
+                databaseName: {title: Database name, type: string, pattern: '^[a-z][a-z0-9_]*$'}
+                userName: {title: Database user, type: string, pattern: '^[a-z][a-z0-9_]*$', default: app}
+                postgresVersion: {title: PostgreSQL version, type: integer, minimum: 13, default: 16}
+                replicaCount: {title: Replica count, type: integer, minimum: 1, default: 1}
+                storageSize: {title: Environment storage, type: string, default: 5Gi}
+                storageClass: {title: StorageClass, type: string, default: ''}
+              required: [databaseName, userName, postgresVersion, replicaCount, storageSize]
+  steps:
+    - id: fetchSystem
+      name: Fetch System
+      action: catalog:fetch
+      input:
+        entityRef: ${{ parameters.systemRef }}
+        defaultKind: System
+        defaultNamespace: default
+    - id: fetchDomain
+      name: Fetch Domain
+      action: catalog:fetch
+      input:
+        entityRef: ${{ steps.fetchSystem.output.entity.spec.domain }}
+        defaultKind: Domain
+        defaultNamespace: default
+    - id: renderResourceBase
+      name: Render Resource repository
+      action: fetch:template
+      input:
+        url: ../../skeletons/resource/base
+        targetPath: resource-repo
+        values:
+          profile: ${{ parameters.profile }}
+          resourceName: ${{ parameters.resourceName }}
+          description: PostgreSQL database for ${{ steps.fetchSystem.output.entity.metadata.name }}
+          owner: group:default/domain-maintainers
+          systemRef: ${{ parameters.systemRef }}
+          systemName: ${{ steps.fetchSystem.output.entity.metadata.name }}
+    - id: renderProfileRepository
+      name: Render Resource profile documentation
+      action: fetch:template
+      input:
+        url: ../../skeletons/resource/implementations/${{ parameters.profile }}/resource-repo
+        targetPath: resource-repo
+        values:
+          resourceName: ${{ parameters.resourceName }}
+          profile: ${{ parameters.profile }}
+          systemRef: ${{ parameters.systemRef }}
+          owner: group:default/domain-maintainers
+          systemName: ${{ steps.fetchSystem.output.entity.metadata.name }}
+          scmProvider: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-provider'] or 'github' }}
+          scmHost: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}
+          domainOrg: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}
+          domainRepo: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-repo'] }}
+          repositoryName: ${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.resourceName }}-resource
+          repoWebUrl: https://${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}/${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}/${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.resourceName }}-resource
+          systemRepoWebUrl: https://${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}/${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}/${{ steps.fetchSystem.output.entity.metadata.annotations['contract-first-idp.github.io/repository-name'] or (steps.fetchSystem.output.entity.metadata.name + '-system') }}
+          databaseName: ${{ parameters.databaseName }}
+          userName: ${{ parameters.userName }}
+          postgresVersion: ${{ parameters.postgresVersion }}
+          replicaCount: ${{ parameters.replicaCount }}
+    - id: renderSystemBase
+      name: Render Resource base desired state
+      action: fetch:template
+      input:
+        url: ../../skeletons/resource/implementations/${{ parameters.profile }}/system-repo/base
+        targetPath: system-pr/resources/${{ parameters.profile }}/${{ parameters.resourceName }}
+        values:
+          resourceName: ${{ parameters.resourceName }}
+          databaseName: ${{ parameters.databaseName }}
+          userName: ${{ parameters.userName }}
+          postgresVersion: ${{ parameters.postgresVersion }}
+          replicaCount: ${{ parameters.replicaCount }}
+          storageClass: ${{ parameters.storageClass }}
+    - id: renderSystemEnvironment
+      each: ${{ steps.fetchDomain.output.entity.spec.environments.order }}
+      name: Render Resource environment ${{ each.value }}
+      action: fetch:template
+      input:
+        url: ../../skeletons/resource/implementations/${{ parameters.profile }}/system-repo/environment
+        targetPath: system-pr/resources/${{ parameters.profile }}/${{ parameters.resourceName }}/environments
+        values:
+          resourceName: ${{ parameters.resourceName }}
+          environment: ${{ each.value }}
+          storageSize: ${{ parameters.storageSize }}
+    - id: publish
+      name: Publish Resource repository
+      action: publish:github
+      input:
+        sourcePath: resource-repo
+        repoUrl: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}?owner=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}&repo=${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.resourceName }}-resource
+        description: ${{ parameters.profile }} Resource ${{ parameters.resourceName }} for System ${{ steps.fetchSystem.output.entity.metadata.name }}
+        defaultBranch: main
+        repoVisibility: public
+        protectDefaultBranch: true
+        requiredApprovingReviewCount: 0
+        protectEnforceAdmins: true
+        collaborators:
+          - {team: domain-maintainers, access: maintain}
+          - {team: domain-contributors, access: push}
+          - {team: domain-viewers, access: pull}
+    - id: register
+      name: Register Resource immediately
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+    - id: systemPr
+      name: Open System Resource pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}?owner=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}&repo=${{ steps.fetchSystem.output.entity.metadata.annotations['contract-first-idp.github.io/repository-name'] or (steps.fetchSystem.output.entity.metadata.name + '-system') }}
+        branchName: add-resource-${{ parameters.resourceName }}
+        title: Add ${{ parameters.profile }} Resource ${{ parameters.resourceName }}
+        description: Add System-owned Resource desired state across the Domain lifecycle.
+        sourcePath: system-pr
+        createWhenEmpty: false
+  output:
+    links:
+      - title: Resource repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: System pull request
+        url: ${{ steps.systemPr.output.remoteUrl }}
+      - title: Resource catalog entity
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: details
+  namespace: vendor
+  title: '[TEST] Vendor Details API'
+  description: Duplicate API name and operation ID used only by Component integration tests.
+  annotations:
+    contract-first-idp.github.io/schema-registry-group-id: com.vendor.catalog
+    contract-first-idp.github.io/schema-registry-artifact-id: details
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:default/domain-maintainers
+  system: system:vendor/catalog
+  definition:
+    $text: ./contracts/vendor-details.yaml

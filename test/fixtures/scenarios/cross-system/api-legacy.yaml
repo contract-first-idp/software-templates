@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: legacy-unpublished
+  namespace: payments
+  title: '[TEST] Legacy Unpublished API'
+  description: Negative fixture intentionally missing enterprise Registry coordinates.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:default/domain-maintainers
+  system: system:payments/payments
+  definition: |
+    openapi: 3.0.3
+    info: {title: Legacy unpublished API, version: 1.0.0}
+    paths: {}

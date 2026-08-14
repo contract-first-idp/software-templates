@@ -1,0 +1,22 @@
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: vendor
+  namespace: vendor
+  title: '[TEST] Vendor Domain'
+  description: External vendor represented in Backstage for Component integration tests.
+  annotations:
+    contract-first-idp.github.io/scm-provider: github
+    contract-first-idp.github.io/scm-host: github.com
+    contract-first-idp.github.io/domain-org: contract-first-idp
+    contract-first-idp.github.io/domain-repo: software-templates
+spec:
+  owner: group:default/domain-maintainers
+  platformTarget: resource:default/workshop
+  groupId: com.vendor
+  environments:
+    order: [dev, prod]
+    build: dev
+    definitions:
+      dev: {namespaceSuffix: -dev}
+      prod: {namespaceSuffix: ''}

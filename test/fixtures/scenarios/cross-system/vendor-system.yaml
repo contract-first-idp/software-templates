@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: catalog
+  namespace: vendor
+  title: '[TEST] Vendor Catalog System'
+  description: External vendor System used only by Component integration tests.
+spec:
+  owner: group:default/domain-maintainers
+  domain: domain:vendor/vendor
+  groupId: com.vendor.catalog

@@ -1,0 +1,7 @@
+componentName: details-client
+description: Component consuming one floating API contract
+systemRef: system:cf-idp-integration-tests/storefront
+implementationProfile: quarkus-camel-openapi
+implementsApi: false
+consumedApis:
+  - {apiRef: 'api:cf-idp-integration-tests/details', version: latest}

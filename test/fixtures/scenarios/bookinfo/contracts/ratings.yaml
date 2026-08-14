@@ -1,0 +1,66 @@
+openapi: 3.0.3
+info:
+    title: ratings
+    description: Ratings API
+    version: v1
+servers:
+    - url: http://localhost:8080
+paths:
+    "/ratings/{id}":
+        get:
+            tags:
+                - ratings
+            parameters:
+                - name: id
+                  description: Product id
+                  schema:
+                      format: int32
+                      type: integer
+                  in: path
+                  required: true
+                  examples:
+                      product_1:
+                          value: 1
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ProductRatings"
+                            examples:
+                                product_1:
+                                    value:
+                                        id: 1
+                                        ratings:
+                                            Reviewer1: 5
+                                            Reviewer2: 4
+                    description: successful operation
+                "400":
+                    description: Invalid product id
+            operationId: getProductRatings
+            summary: Get ratings for a product
+            description: Get a list of ratings for a product
+components:
+    schemas:
+        ProductRatings:
+            description: Object containing ratings of a product
+            required:
+                - id
+                - ratings
+            type: object
+            properties:
+                id:
+                    format: int32
+                    description: Product id
+                    type: integer
+                ratings:
+                    description: A hashmap where keys are reviewer names, values are number of stars
+                    type: object
+                    additionalProperties:
+                        type: integer
+tags:
+    - name: rating
+      description: Rating information for a product
+externalDocs:
+    description: Learn more about the Istio BookInfo application
+    url: https://istio.io/docs/test/fixtures/scenarios/bookinfo.html

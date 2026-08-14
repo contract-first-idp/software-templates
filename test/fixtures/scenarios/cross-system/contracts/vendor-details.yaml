@@ -1,0 +1,16 @@
+openapi: 3.0.3
+info:
+  title: Vendor Details API
+  version: 1.0.0
+paths:
+  /details/{id}:
+    get:
+      operationId: getProduct
+      summary: Get vendor product details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: {type: integer, format: int32}
+      responses:
+        '200': {description: Product details}

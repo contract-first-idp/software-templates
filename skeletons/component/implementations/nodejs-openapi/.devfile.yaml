@@ -1,0 +1,16 @@
+schemaVersion: 2.2.0
+metadata:
+  name: ${{ values.component_id }}
+components:
+  - name: tools
+    container:
+      image: registry.access.redhat.com/ubi9/nodejs-24:latest
+      mountSources: true
+      command: [sleep, infinity]
+      endpoints:
+        - {name: http, targetPort: 8080}
+commands:
+  - id: test
+    exec: {component: tools, commandLine: npm ci && npm test, workingDir: /projects/${{ values.component_id }}}
+  - id: run
+    exec: {component: tools, commandLine: npm ci && npm run build && npm start, workingDir: /projects/${{ values.component_id }}}

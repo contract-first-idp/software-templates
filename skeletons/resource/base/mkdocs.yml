@@ -1,0 +1,5 @@
+site_name: ${{ values.resourceName }} Resource
+nav:
+  - Resource overview: index.md
+plugins:
+  - techdocs-core

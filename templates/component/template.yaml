@@ -1,0 +1,381 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: component-golden-path
+  title: Component Golden Path
+  description: Create a complete Tekton-built Component repository.
+  annotations:
+    backstage-gitea.io/github-compatible: 'true'
+  tags: [contract-first, api, component, tekton]
+spec:
+  owner: group:default/platform-maintainers
+  type: service
+  parameters:
+    - title: Component
+      required: [componentName, description, systemRef, implementationProfile, implementsApi]
+      properties:
+        componentName:
+          title: Component name
+          type: string
+          pattern: '^([a-z][a-z0-9]*)(-[a-z0-9]+)*$'
+        description: {title: Description, type: string}
+        systemRef:
+          title: System
+          type: string
+          ui:field: EntityPicker
+          ui:options:
+            allowArbitraryValues: false
+            catalogFilter: [{kind: System}]
+        implementationProfile:
+          title: Implementation profile
+          description: Quarkus with Camel Java DSL is the recommended implementation.
+          type: string
+          default: quarkus-camel-openapi
+          enum:
+            - quarkus-camel-openapi
+            - quarkus-camel-openapi-yaml
+            - spring-boot-camel-openapi
+            - spring-boot-openapi
+            - nodejs-openapi
+          enumNames:
+            - Quarkus Camel OpenAPI Java DSL (Recommended)
+            - Quarkus Camel OpenAPI YAML DSL
+            - Spring Boot Camel OpenAPI Java DSL
+            - Spring Boot OpenAPI
+            - Node.js OpenAPI
+        implementsApi: {title: Provides an API, type: boolean, default: false}
+        consumedApis:
+          title: Consumed APIs
+          description: APIs this component calls and the contract version each build should use.
+          type: array
+          default: []
+          items:
+            type: object
+            required: [apiRef, version]
+            properties:
+              apiRef:
+                title: API
+                type: string
+                ui:field: EntityPicker
+                ui:options:
+                  allowArbitraryValues: false
+                  catalogFilter:
+                    - kind: API
+                      spec.type: openapi
+              version:
+                title: Contract version
+                description: Use latest only when accepting a floating contract; prefer a release such as v2.1.3 or an exact 40-character Git SHA.
+                type: string
+                default: latest
+                pattern: '^(latest|v[0-9]+(\.[0-9]+){0,2}(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?|[0-9a-fA-F]{40})$'
+      dependencies:
+        implementationProfile:
+          oneOf:
+            - properties:
+                implementationProfile:
+                  enum: [quarkus-camel-openapi, quarkus-camel-openapi-yaml]
+                quarkusBuildTarget:
+                  title: Quarkus build target
+                  type: string
+                  default: jvm
+                  enum: [jvm, native]
+                  enumNames: [JVM (Recommended), Native executable]
+              required: [quarkusBuildTarget]
+            - properties:
+                implementationProfile:
+                  enum: [spring-boot-camel-openapi, spring-boot-openapi, nodejs-openapi]
+        implementsApi:
+          oneOf:
+            - properties:
+                implementsApi: {const: true}
+                apiRef:
+                  title: Provided API
+                  type: string
+                  ui:field: EntityPicker
+                  ui:options:
+                    allowArbitraryValues: false
+                    catalogFilter:
+                      - kind: API
+                        spec.type: openapi
+                providedApiVersion:
+                  title: Provided API contract version
+                  description: Use latest only when accepting a floating contract; prefer a release such as v2.1.3 or an exact 40-character Git SHA.
+                  type: string
+                  default: latest
+                  pattern: '^(latest|v[0-9]+(\.[0-9]+){0,2}(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?|[0-9a-fA-F]{40})$'
+              required: [apiRef, providedApiVersion]
+            - properties: {implementsApi: {const: false}}
+  steps:
+    - id: fetchSystem
+      name: Fetch parent System
+      action: catalog:fetch
+      input:
+        entityRef: ${{ parameters.systemRef }}
+        defaultKind: System
+        defaultNamespace: default
+    - id: fetchDomain
+      name: Fetch parent Domain
+      action: catalog:fetch
+      input:
+        entityRef: ${{ steps.fetchSystem.output.entity.spec.domain }}
+        defaultKind: Domain
+        defaultNamespace: default
+    - id: fetchTarget
+      name: Fetch platform target
+      action: catalog:fetch
+      input:
+        entityRef: ${{ steps.fetchDomain.output.entity.spec.platformTarget }}
+        defaultKind: Resource
+        defaultNamespace: default
+    - id: resolveBuildProfile
+      name: Resolve approved build profile
+      action: roadiehq:utils:jsonata
+      input:
+        data:
+          implementationProfile: ${{ parameters.implementationProfile }}
+          quarkusBuildTarget: ${{ parameters.quarkusBuildTarget or 'jvm' }}
+        expression: >-
+          (
+            implementationProfile in ["quarkus-camel-openapi", "quarkus-camel-openapi-yaml"]
+              ? (quarkusBuildTarget = "native" ? "quarkus-native" : "quarkus-jvm")
+              : implementationProfile in ["spring-boot-camel-openapi", "spring-boot-openapi"]
+                ? "spring-boot"
+                : implementationProfile = "nodejs-openapi"
+                  ? "nodejs"
+                  : $error("Unsupported implementation profile: " & implementationProfile)
+          )
+    - id: fetchApi
+      name: Fetch provided API
+      if: ${{ parameters.implementsApi }}
+      action: catalog:fetch
+      input:
+        entityRef: ${{ parameters.apiRef }}
+    - id: fetchConsumedApis
+      name: Fetch consumed API metadata
+      each: ${{ parameters.consumedApis }}
+      action: catalog:fetch
+      input:
+        entityRef: ${{ each.value.apiRef }}
+        defaultKind: API
+        defaultNamespace: default
+    - id: resolveApiMetadata
+      name: Resolve API metadata
+      action: roadiehq:utils:jsonata
+      input:
+        data:
+          providedEntity: ${{ steps.fetchApi.output.entity if parameters.implementsApi else null }}
+          providedVersion: ${{ parameters.providedApiVersion if parameters.implementsApi else null }}
+          consumedEntities: ${{ steps.fetchConsumedApis.output.entity if parameters.consumedApis | length > 0 else [] }}
+          consumedSelections: ${{ parameters.consumedApis }}
+          schemaRegistryApiUrl: ${{ steps.fetchTarget.output.entity.spec.platform.schemaRegistry.apiUrl }}
+        expression: >-
+          (
+            $metadata := function($entity, $version, $consumed) {(
+              $namespace := $entity.metadata.namespace ? $entity.metadata.namespace : "default";
+              $name := $entity.metadata.name;
+              $annotations := $type($entity.metadata.annotations) = "object"
+                ? $entity.metadata.annotations : {};
+              $group := $lookup($annotations,
+                "contract-first-idp.github.io/schema-registry-group-id");
+              $artifact := $lookup($annotations,
+                "contract-first-idp.github.io/schema-registry-artifact-id");
+              $selector := $version = "latest" ? "branch=latest" : $version;
+              $base := $replace(schemaRegistryApiUrl, /\/$/, "");
+              $common := {
+                "ref": "api:" & $namespace & "/" & $name,
+                "name": $name,
+                "registry_group_id": $group,
+                "registry_artifact_id": $artifact,
+                "contract_file": ($consumed ? $namespace & "-" : "") & $name & "-api.yaml",
+                "version": $version
+              };
+              $consumed ? $merge([$common, {
+                "namespace": $namespace,
+                "alias": $namespace & "-" & $name,
+                "registry_version_selector": $selector,
+                "content_url": $base & "/groups/" & $encodeUrlComponent($group) &
+                  "/artifacts/" & $encodeUrlComponent($artifact) & "/versions/" &
+                  $encodeUrlComponent($selector) & "/content"
+              }]) : $common
+            )};
+            $provided := providedEntity
+              ? $metadata(providedEntity, providedVersion, false)
+              : null;
+            $entities := $type(consumedEntities) = "array" ? consumedEntities
+              : $type(consumedEntities) = "object" ? [consumedEntities] : [];
+            $selections := $type(consumedSelections) = "array" ? consumedSelections : [];
+            $consumed := [$map($zip($entities, $selections),
+              function($pair) {
+                $metadata($pair[0], $pair[1].version, true)
+              })];
+            {"provided_api": $provided, "consumed_apis": $consumed}
+          )
+    - id: fetchConsumedContracts
+      name: Fetch consumed API contracts from Apicurio
+      each: ${{ steps.resolveApiMetadata.output.result.consumed_apis }}
+      action: fetch:plain:file
+      input:
+        url: ${{ each.value.content_url }}
+        targetPath: consumed-contracts/${{ each.key }}-${{ each.value.contract_file }}
+    - id: parseConsumedContracts
+      name: Parse consumed API contracts
+      each: ${{ steps.resolveApiMetadata.output.result.consumed_apis }}
+      action: roadiehq:utils:fs:parse
+      input:
+        path: consumed-contracts/${{ each.key }}-${{ each.value.contract_file }}
+        parser: yaml
+    - id: discoverConsumedOperations
+      name: Discover consumed API operations
+      action: roadiehq:utils:jsonata
+      input:
+        data:
+          apis: ${{ steps.resolveApiMetadata.output.result.consumed_apis }}
+          parsedContracts: ${{ steps.parseConsumedContracts.output.content if parameters.consumedApis | length > 0 else [] }}
+        expression: >-
+          (
+            $apis := $type(apis) = "array" ? apis : $type(apis) = "object" ? [apis] : [];
+            $contracts := $type(parsedContracts) = "array" ? parsedContracts
+              : $type(parsedContracts) = "object" ? [parsedContracts] : [];
+            {
+            "consumed_apis": [$map($zip($apis, $contracts), function($x) {(
+              $api := $x[0];
+              $d := $x[1];
+              $paths := $type($d.paths) = "object" ? $d.paths : {};
+              $pathNames := $keys($paths);
+              $methods := ["get", "put", "post", "delete", "options", "head", "patch", "trace"];
+              $ops := $exists($pathNames) ? $reduce($pathNames, function($all, $path) {(
+                $item := $lookup($paths, $path);
+                $found := $type($item) = "object" ? $map($methods, function($method) {(
+                  $op := $lookup($item, $method);
+                  $id := $op.operationId;
+                  $type($op) = "object" and $type($id) = "string" and $trim($id) != ""
+                    ? {"operation_id": $id, "method": $method, "path": $path,
+                       "summary": $type($op.summary) = "string" ? $op.summary : ""}
+                    : undefined
+                )}) : [];
+                $append($all, $found)
+              )}, []) : [];
+              $merge([$api, {"operations": $ops}])
+            )})]
+            }
+          )
+    - id: renderImplementation
+      name: Render selected implementation
+      action: fetch:template
+      input:
+        url: ../../skeletons/component/implementations/${{ parameters.implementationProfile }}
+        targetPath: component-repo
+        values:
+          component_id: ${{ parameters.componentName }}
+          componentName: ${{ parameters.componentName }}
+          implementationProfile: ${{ parameters.implementationProfile }}
+          build_profile: ${{ steps.resolveBuildProfile.output.result }}
+          description: ${{ parameters.description }}
+          owner: group:default/domain-maintainers
+          system_ref: ${{ parameters.systemRef }}
+          system_name: ${{ steps.fetchSystem.output.entity.metadata.name }}
+          git_org: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}
+          openshift_cluster_domain: ${{ steps.fetchTarget.output.entity.spec.platform.cluster.routerDomain }}
+          group_id: ${{ steps.fetchSystem.output.entity.spec.groupId }}
+          java_package: ${{ steps.fetchSystem.output.entity.spec.groupId }}.${{ parameters.componentName | replace('-', '') }}
+          folder_java_package: ${{ steps.fetchSystem.output.entity.spec.groupId | replace('.', '/') }}/${{ parameters.componentName | replace('-', '') }}
+          schema_registry_api_url: ${{ steps.fetchTarget.output.entity.spec.platform.schemaRegistry.apiUrl }}
+          provided_api: ${{ steps.resolveApiMetadata.output.result.provided_api }}
+          consumed_apis: ${{ steps.discoverConsumedOperations.output.result.consumed_apis }}
+    - id: renderBase
+      name: Render Component metadata
+      action: fetch:template
+      input:
+        url: ../../skeletons/component/base
+        targetPath: component-repo
+        values:
+          componentName: ${{ parameters.componentName }}
+          description: ${{ parameters.description }}
+          owner: group:default/domain-maintainers
+          systemRef: ${{ parameters.systemRef }}
+          implementationProfile: ${{ parameters.implementationProfile }}
+          buildProfile: ${{ steps.resolveBuildProfile.output.result }}
+          implementsApi: ${{ parameters.implementsApi }}
+          apiRef: ${{ parameters.apiRef if parameters.implementsApi else null }}
+          schemaRegistryApiUrl: ${{ steps.fetchTarget.output.entity.spec.platform.schemaRegistry.apiUrl }}
+          provided_api: ${{ steps.resolveApiMetadata.output.result.provided_api }}
+          consumed_apis: ${{ steps.discoverConsumedOperations.output.result.consumed_apis }}
+          scmProvider: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-provider'] or 'github' }}
+          scmHost: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}
+          domainOrg: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}
+          domainRepo: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-repo'] }}
+          repositoryName: ${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.componentName }}-service
+    - id: renderComponentDesiredState
+      name: Render Component desired state
+      action: fetch:template
+      input:
+        url: ../../skeletons/component/system-repo/base
+        targetPath: system-pr/components/${{ parameters.componentName }}
+        values:
+          componentName: ${{ parameters.componentName }}
+          componentRepoCloneUrl: https://${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}/${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}/${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.componentName }}-service.git
+          implementationProfile: ${{ parameters.implementationProfile }}
+          buildProfile: ${{ steps.resolveBuildProfile.output.result }}
+          buildEnabled: true
+          sourceRevision: main
+          buildEnvironment: ${{ steps.fetchDomain.output.entity.spec.environments.build }}
+    - id: renderComponentEnvironment
+      each: ${{ steps.fetchDomain.output.entity.spec.environments.order }}
+      name: Render Component environments
+      action: fetch:template
+      input:
+        url: ../../skeletons/component/system-repo/environment
+        targetPath: system-pr/components/${{ parameters.componentName }}/environments
+        values:
+          environment: ${{ each.value }}
+          buildEnvironment: ${{ steps.fetchDomain.output.entity.spec.environments.build }}
+    - id: publish
+      name: Publish Component repository
+      action: publish:github
+      input:
+        sourcePath: component-repo
+        repoUrl: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}?owner=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}&repo=${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.componentName }}-service
+        description: ${{ parameters.description }}
+        defaultBranch: main
+        repoVisibility: public
+        protectDefaultBranch: true
+        requiredApprovingReviewCount: 0
+        protectEnforceAdmins: true
+        collaborators:
+          - {team: domain-maintainers, access: maintain}
+          - {team: domain-contributors, access: push}
+          - {team: domain-viewers, access: pull}
+    - id: register
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+    - id: webhook
+      name: Create Tekton webhook
+      action: github:webhook
+      input:
+        repoUrl: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}?owner=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}&repo=${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.componentName }}-service
+        webhookUrl: https://el-${{ parameters.componentName }}-${{ steps.fetchSystem.output.entity.metadata.name }}${{ steps.fetchDomain.output.entity.spec.environments.definitions[steps.fetchDomain.output.entity.spec.environments.build].namespaceSuffix }}.${{ steps.fetchTarget.output.entity.spec.platform.cluster.routerDomain }}
+        events: [push]
+        active: true
+        contentType: json
+        insecureSsl: false
+    - id: systemPr
+      name: Open System wiring pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}?owner=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}&repo=${{ steps.fetchSystem.output.entity.metadata.annotations['contract-first-idp.github.io/repository-name'] or (steps.fetchSystem.output.entity.metadata.name + '-system') }}
+        branchName: add-component-${{ parameters.componentName }}
+        title: Add Component ${{ parameters.componentName }}
+        description: Contribute Component runtime and mandatory Tekton build intent to the System repository.
+        sourcePath: system-pr
+        createWhenEmpty: false
+  output:
+    links:
+      - title: Component repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: System pull request
+        url: ${{ steps.systemPr.output.remoteUrl }}
+      - title: Component catalog entity
+        icon: catalog
+        entityRef: component:default/${{ parameters.componentName }}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>${{ values.registryGroupId }}</groupId>
+  <artifactId>${{ values.api_id }}</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <registry.version>${env.REGISTRY_VERSION}</registry.version>
+    <registry.ifExists>${env.REGISTRY_IF_EXISTS}</registry.ifExists>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.apicurio</groupId>
+        <artifactId>apicurio-registry-maven-plugin</artifactId>
+        <version>3.2.5</version>
+        <configuration>
+          <registryUrl>${{ values.schemaRegistryApiUrl }}</registryUrl>
+          <authServerUrl>${env.APICURIO_AUTH_SERVER_URL}/protocol/openid-connect/token</authServerUrl>
+          <clientId>${env.APICURIO_CLIENT_ID}</clientId>
+          <clientSecret>${env.APICURIO_CLIENT_SECRET}</clientSecret>
+          <artifacts>
+            <artifact>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.artifactId}</artifactId>
+              <artifactType>OPENAPI</artifactType>
+              <contentType>application/yaml</contentType>
+              <file>${project.basedir}/specification.yaml</file>
+              <version>${registry.version}</version>
+              <ifExists>${registry.ifExists}</ifExists>
+            </artifact>
+          </artifacts>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

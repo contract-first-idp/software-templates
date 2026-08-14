@@ -1,2 +1,8 @@
-.vscode/*
-.vscode/extensions.json
+/test/node_modules/
+/test/coverage/
+/test/.cache/
+/test/output/
+/test/.env
+*.log
+.DS_Store
+.qwen

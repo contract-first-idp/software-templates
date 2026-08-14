@@ -1,0 +1,100 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: activate-system-environment
+  title: Activate System Environment
+  description: Activate one existing System in one additional Domain environment.
+  annotations: {backstage-gitea.io/github-compatible: 'true'}
+  tags: [contract-first, gitops, system, environment]
+spec:
+  owner: group:default/platform-maintainers
+  type: system
+  parameters:
+    - title: Activation
+      required: [systemRef, targetEnvironment]
+      properties:
+        systemRef:
+          title: Existing System
+          type: string
+          ui:field: EntityPicker
+          ui:options:
+            allowArbitraryValues: false
+            catalogFilter: [{kind: System}]
+        targetEnvironment:
+          title: Additional environment
+          type: string
+          pattern: '^([a-z][a-z0-9]*)(-[a-z0-9]+)*$'
+          description: Non-build environment declared by the parent Domain. The build environment is activated during System creation.
+  steps:
+    - id: fetchSystem
+      name: Fetch existing System
+      action: catalog:fetch
+      input:
+        entityRef: ${{ parameters.systemRef }}
+    - id: fetchDomain
+      name: Fetch System Domain
+      action: catalog:fetch
+      input:
+        entityRef: ${{ steps.fetchSystem.output.entity.spec.domain }}
+        defaultKind: Domain
+        defaultNamespace: default
+    - id: reportInvalidEnvironment
+      name: Report valid activation targets
+      if: >-
+        ${{ not (
+          parameters.targetEnvironment
+          in steps.fetchDomain.output.entity.spec.environments.order
+        ) or
+        parameters.targetEnvironment
+        == steps.fetchDomain.output.entity.spec.environments.build }}
+      action: debug:log
+      input:
+        message: >-
+          Invalid activation target "${{ parameters.targetEnvironment }}".
+          Declared environments:
+          ${{ steps.fetchDomain.output.entity.spec.environments.order
+              | join(', ') }}.
+          The build environment
+          "${{ steps.fetchDomain.output.entity.spec.environments.build }}"
+          is activated during System creation and is not an additional
+          activation target.
+    - id: rejectInvalidEnvironment
+      name: Reject invalid environment
+      if: >-
+        ${{ not (
+          parameters.targetEnvironment
+          in steps.fetchDomain.output.entity.spec.environments.order
+        ) or
+        parameters.targetEnvironment
+        == steps.fetchDomain.output.entity.spec.environments.build }}
+      action: catalog:fetch
+      input: {}
+    - id: renderDomainActivation
+      name: Render one System environment activation
+      action: fetch:template
+      input:
+        url: ../../skeletons/system/domain-repo
+        targetPath: domain-pr/systems/${{ steps.fetchSystem.output.entity.metadata.name }}/environments
+        values:
+          environment: ${{ parameters.targetEnvironment }}
+          systemName: ${{ steps.fetchSystem.output.entity.metadata.name }}
+          groupId: ${{ steps.fetchSystem.output.entity.spec.groupId }}
+          systemRepoCloneUrl: https://${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}/${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}/${{ steps.fetchSystem.output.entity.metadata.annotations['contract-first-idp.github.io/repository-name'] or (steps.fetchSystem.output.entity.metadata.name + '-system') }}.git
+          systemRepoRevision: main
+    - id: domainPr
+      name: Open Domain environment activation pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}?owner=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}&repo=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-repo'] }}
+        branchName: activate-${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.targetEnvironment }}
+        title: Activate System ${{ steps.fetchSystem.output.entity.metadata.name }} in ${{ parameters.targetEnvironment }}
+        description: Merging this pull request creates System ${{ steps.fetchSystem.output.entity.metadata.name }}'s platform presence in ${{ parameters.targetEnvironment }}.
+        sourcePath: domain-pr
+        createWhenEmpty: false
+  output:
+    links:
+      - title: Domain environment pull request
+        url: ${{ steps.domainPr.output.remoteUrl }}
+      - title: System catalog entity
+        icon: catalog
+        entityRef: ${{ parameters.systemRef }}
