@@ -1,0 +1,103 @@
+openapi: 3.0.3
+info:
+    title: details
+    description: Details API
+    version: v1
+servers:
+    - url: http://localhost:8080
+paths:
+    "/details/{id}":
+        get:
+            tags:
+                - details
+            parameters:
+                - examples:
+                      product_1:
+                          value: 1
+                  name: id
+                  description: Product id
+                  schema:
+                      format: int32
+                      type: integer
+                  in: path
+                  required: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ProductDetails"
+                            examples:
+                                product_1:
+                                    value:
+                                        id: 1
+                                        author: William Shakespeare
+                                        year: 1595
+                                        type: paperback
+                                        pages: 200
+                                        publisher: PublisherA
+                                        language: English
+                                        ISBN-10: "1234567890"
+                                        ISBN-13: 123-1234567890
+                    description: successful operation
+                "400":
+                    description: Invalid product id
+            operationId: getProduct
+            summary: Get details for a product
+            description: Get detailed information about an individual product with the given
+                id.
+components:
+    schemas:
+        ProductDetails:
+            description: Detailed information about a product
+            required:
+                - ISBN-10
+                - ISBN-13
+                - author
+                - id
+                - language
+                - pages
+                - publisher
+                - type
+                - year
+            type: object
+            properties:
+                id:
+                    format: int32
+                    description: Product id
+                    type: integer
+                publisher:
+                    description: Publisher of the book
+                    type: string
+                language:
+                    description: Language of the book
+                    type: string
+                author:
+                    description: Author of the book
+                    type: string
+                ISBN-10:
+                    description: ISBN-10 of the book
+                    type: string
+                ISBN-13:
+                    description: ISBN-13 of the book
+                    type: string
+                year:
+                    format: int32
+                    description: Year the book was first published in
+                    type: integer
+                type:
+                    description: Type of the book
+                    enum:
+                        - paperback
+                        - hardcover
+                    type: string
+                pages:
+                    format: int32
+                    description: Number of pages of the book
+                    type: integer
+tags:
+    - name: details
+      description: Information about a product (in this case a book)
+externalDocs:
+    description: Learn more about the Istio BookInfo application
+    url: https://istio.io/docs/test/fixtures/scenarios/bookinfo.html

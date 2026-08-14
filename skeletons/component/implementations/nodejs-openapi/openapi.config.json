@@ -1,0 +1,23 @@
+{
+  "schemaRegistryApiUrl": "${{ values.schema_registry_api_url }}",
+  "provided": {% if values.provided_api %}{
+    "name": "${{ values.provided_api.name }}",
+    "groupId": "${{ values.provided_api.registry_group_id }}",
+    "artifactId": "${{ values.provided_api.registry_artifact_id }}",
+    "version": "${{ values.provided_api.version }}",
+    "contractFile": "${{ values.provided_api.contract_file }}"
+  }{% else %}null{% endif %},
+  "consumed": [
+    {%- for api in values.consumed_apis %}
+    {
+      "name": "${{ api.name }}",
+      "alias": "${{ api.alias }}",
+      "groupId": "${{ api.registry_group_id }}",
+      "artifactId": "${{ api.registry_artifact_id }}",
+      "version": "${{ api.version }}",
+      "contractFile": "${{ api.contract_file }}",
+      "defaultBaseUrl": "http://${{ api.name }}:8080"
+    }{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}

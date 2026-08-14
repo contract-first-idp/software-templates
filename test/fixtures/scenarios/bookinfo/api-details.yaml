@@ -1,0 +1,22 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: details
+  namespace: cf-idp-integration-tests
+  title: '[TEST] Bookinfo Details API'
+  description: Real Bookinfo Details contract used by Component integration tests.
+  annotations:
+    contract-first-idp.github.io/scm-provider: github
+    contract-first-idp.github.io/scm-host: github.com
+    contract-first-idp.github.io/domain-org: contract-first-idp
+    contract-first-idp.github.io/domain-repo: software-templates
+    contract-first-idp.github.io/repository-name: bookinfo-details-api
+    contract-first-idp.github.io/schema-registry-group-id: io.github.cfidp.bookinfo
+    contract-first-idp.github.io/schema-registry-artifact-id: details
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:default/domain-maintainers
+  system: system:cf-idp-integration-tests/bookinfo
+  definition:
+    $text: ./contracts/details.yaml

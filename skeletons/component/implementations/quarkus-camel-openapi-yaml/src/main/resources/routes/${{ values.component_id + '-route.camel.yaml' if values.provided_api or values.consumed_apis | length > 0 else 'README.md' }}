@@ -1,0 +1,26 @@
+{%- if values.provided_api or values.consumed_apis | length > 0 %}
+  {%- if values.provided_api %}
+- rest:
+    openApi:
+      missingOperation: mock
+      specification: ${{ values.provided_api.contract_file }}
+  {%- endif %}
+  {%- for consumed_api in values.consumed_apis %}
+  {%- for operation in consumed_api.operations %}
+- route:
+    id: consume-${{ consumed_api.alias }}-${{ operation.operation_id }}
+    from:
+      uri: direct:${{ consumed_api.alias }}.${{ operation.operation_id }}
+      parameters: {}
+      steps:
+        - removeHeaders:
+            pattern: "*"
+        - to:
+            uri: "rest-openapi:${{ consumed_api.contract_file }}#${{ operation.operation_id }}?host={{openapi.client.${{ consumed_api.alias }}.host}}"
+  {%- endfor %}
+  {%- endfor %}
+{%- else %}
+# API routes
+
+No API contracts were selected, so this profile contains no generated Camel routes.
+{%- endif %}

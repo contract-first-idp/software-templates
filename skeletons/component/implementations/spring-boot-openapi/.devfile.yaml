@@ -1,0 +1,23 @@
+schemaVersion: 2.2.0
+metadata:
+  name: ${{ values.componentName }}
+components:
+  - name: tooling
+    container:
+      image: registry.access.redhat.com/ubi9/openjdk-21:latest
+      mountSources: true
+      memoryLimit: 2Gi
+      endpoints:
+        - name: http
+          targetPort: 8080
+commands:
+  - id: build
+    exec:
+      component: tooling
+      commandLine: ./mvnw package -DskipTests
+      workingDir: $PROJECT_SOURCE
+  - id: run
+    exec:
+      component: tooling
+      commandLine: ./mvnw generate-sources spring-boot:run
+      workingDir: $PROJECT_SOURCE

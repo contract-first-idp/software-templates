@@ -1,0 +1,11 @@
+organization: cf-idp-tenant
+domainName: cf-idp-tenant
+title: CF-IDP Tenant
+description: Contract-First IDP tenant Domain.
+groupId: io.github.cfidp
+platformTarget: resource:default/workshop
+environments:
+  - {name: dev, namespaceSuffix: -dev}
+  - {name: test, namespaceSuffix: -test}
+  - {name: prod, namespaceSuffix: ''}
+buildEnvironment: dev

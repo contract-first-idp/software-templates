@@ -1,0 +1,30 @@
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: ${{ values.domainName }}
+  title: ${{ values.title }}
+  description: ${{ values.description }}
+  annotations:
+    contract-first-idp.github.io/scm-provider: ${{ values.scmProvider }}
+    contract-first-idp.github.io/scm-host: ${{ values.tenantScmHost }}
+    contract-first-idp.github.io/domain-org: ${{ values.organization }}
+    contract-first-idp.github.io/domain-repo: ${{ values.repositoryName }}
+  links:
+    - url: https://${{ values.tenantScmHost }}/${{ values.organization }}/${{ values.repositoryName }}
+      title: Domain repository
+      icon: github
+spec:
+  owner: group:default/domain-maintainers
+  platformTarget: ${{ values.platformTarget }}
+  groupId: ${{ values.groupId }}
+  environments:
+    order:
+{%- for environment in values.environments %}
+      - ${{ environment.name }}
+{%- endfor %}
+    build: ${{ values.buildEnvironment }}
+    definitions:
+{%- for environment in values.environments %}
+      ${{ environment.name }}:
+        namespaceSuffix: ${{ environment.namespaceSuffix | default("") | dump }}
+{%- endfor %}

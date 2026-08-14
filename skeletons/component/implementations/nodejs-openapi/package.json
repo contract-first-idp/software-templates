@@ -1,0 +1,31 @@
+{
+  "name": "${{ values.component_id }}",
+  "version": "1.0.0",
+  "private": true,
+  "description": "${{ values.description }}",
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "generate:openapi": "node scripts/generate-openapi.mjs",
+    "build": "npm run generate:openapi && tsc -p tsconfig.json",
+    "start": "node dist/src/server.js",
+    "test": "npm run build && node --test dist/test/*.test.js"
+  },
+  "dependencies": {
+    "ajv-formats": "^3.0.1",
+    "axios": "^1.18.1",
+    "express": "^5.2.1",
+    "js-yaml": "^4.3.0",
+    "openapi-backend": "^5.20.0",
+    "openapi-client-axios": "^7.9.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.13.3",
+    "openapicmd": "^2.6.0",
+    "typescript": "^6.0.3"
+  }
+}

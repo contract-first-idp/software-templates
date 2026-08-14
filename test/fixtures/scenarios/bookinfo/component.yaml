@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: reviews
+  namespace: cf-idp-integration-tests
+  title: '[TEST] Bookinfo Reviews Component'
+  description: Staged Component used by the Bookinfo integration-test application.
+  annotations:
+    backstage.io/kubernetes-id: reviews
+    contract-first-idp.github.io/scm-provider: github
+    contract-first-idp.github.io/scm-host: github.com
+    contract-first-idp.github.io/domain-org: contract-first-idp
+    contract-first-idp.github.io/domain-repo: software-templates
+    contract-first-idp.github.io/repository-name: bookinfo-reviews-service
+    contract-first-idp.github.io/implementation-profile: spring-boot-openapi
+spec:
+  type: service
+  lifecycle: production
+  owner: group:default/domain-maintainers
+  system: system:cf-idp-integration-tests/bookinfo
+  providesApis: [api:cf-idp-integration-tests/reviews]

@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${{ values.domainName }}-domain
+  namespace: ${{ values.argocdNamespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: tenant-${{ values.domainName }}-admission
+  sources:
+    - repoURL: ${{ values.developerChartsRepositoryUrl }}
+      targetRevision: ${{ values.developerChartsRevision }}
+      path: charts/domain/environment
+      helm:
+        valueFiles:
+          - $platform/${{ values.platformTargetValuesPath }}
+          - $domain/catalog-info.yaml
+    - repoURL: https://${{ values.tenantScmHost }}/${{ values.organization }}/${{ values.repositoryName }}.git
+      targetRevision: main
+      ref: domain
+    - repoURL: https://${{ values.platformRepositoryHost }}/${{ values.platformRepositoryOrganization }}/${{ values.platformRepositoryName }}.git
+      targetRevision: ${{ values.platformRepositoryRevision }}
+      ref: platform
+  destination:
+    server: ${{ values.destinationServer }}
+    namespace: ${{ values.argocdNamespace }}
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}

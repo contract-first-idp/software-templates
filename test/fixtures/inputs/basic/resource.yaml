@@ -1,0 +1,9 @@
+profile: postgresql
+resourceName: reviews-db
+systemRef: ${TEST_SYSTEM_REF}
+databaseName: reviews
+userName: reviews
+postgresVersion: 16
+replicaCount: 1
+storageSize: 5Gi
+storageClass: ''

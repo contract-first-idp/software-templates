@@ -1,47 +1,95 @@
-# Backstage Golden Path Software Templates
+# Contract-First IDP Software Templates
 
-This is a collection of [Golden Path](https://www.redhat.com/en/blog/designing-golden-paths) templates which focus on contract-first development workflows. Contracts of many forms permeate Enterprise software landscapes, whether they are explicitly defined or not. Almost any integration between software components must include an understanding of the rules and conventions by which communication should take place. Contract-first development implies a an underlying development principle which says that a contract should be defined before implementation takes place. A contract-first approach often maximizes opportunities for implementation automation and can also create optimal conditions for parallel, autonomous workstreams, because the service provider implementing the contract and potentially multiple service consumers of the contract can be implemented without depending on each other. Ideally, the contract provides a complete understanding of both client and server-side expectations related to the communication channel.
+Backstage golden paths that create Contract-First IDP catalog entities, tenant repositories, and
+reviewable GitOps desired state.
 
-![API Lifecycle](media/api-lifecycle.png)
+This repository is primarily for platform engineers who maintain golden paths and contributors who
+change template contracts. Application developers normally use the templates through Developer Hub
+and do not need to clone this repository.
 
-## Proposed Golden Path Workflow
+## Overview
 
-[Backstage uses a set of abstractions for its catalog](https://backstage.io/docs/features/software-catalog/system-model/) called _Entities_ to model an Enterprise software ecosystem. There are 3 core entity types: _Components_, _APIs_, and _Resources_. Sets of core entities that work together are grouped into _Systems_. _Systems_ can be grouped into _Domains_. This simple, yet flexible scheme for modeling a software ecosystem is usually adaptable to just about any Enterprise software landscape. The Golden Path Templates contained in this repository are built for the purpose of managing one of the described types of Backstage entities. Because the entity types have dependency relationships, there are some constraints in terms of the order in which new entities are onboarded.
+The templates capture developer intent in Git. Backstage creates repositories and pull requests;
+Argo CD combines the resulting tenant state with trusted implementations from `developer-charts`.
+Platform installation remains in `platform-components`.
 
-The general proposed workflow for executing the Golden Path Templates is as follows:
+The catalog hierarchy is:
 
-![Golden Path Template Workflow](media/golden-path-template-workflow.png)
+```text
+Domain
+  -> System
+      -> API
+      -> Component
+      -> Resource
+```
 
-## Golden Path Categories
+A Domain owns its Systems. APIs, Components, and Resources are peers within a System. See
+[Architecture and Git contracts](docs/architecture.md) for ownership, reconciliation, discovery,
+and lifecycle details.
 
-The contained Golden Path Template examples generally fit into four categories, described below.
+## Golden Paths
 
-### System Golden Path
+For a new tenant, use the first five paths in order. Use activation and promotion as the
+application moves through its lifecycle.
 
-The System Golden Path template establishes a new Backstage _System_ to which APIs and Components can belong.
+| Order | Golden path | Result |
+| ---: | --- | --- |
+| 1 | **Create Tenant Domain** | Domain repository and platform-admission pull request |
+| 2 | **System Golden Path** | System repository activated in the build environment |
+| 3 | **OpenAPI Specification Golden Path** | API contract repository and Registry publication configuration |
+| 4 | **Component Golden Path** | Implementation repository, tooling, API selections, and build desired state |
+| 5 | **Resource Golden Path** | Resource repository and environment desired state |
+| Repeat | **Activate System Environment** | Domain pull request that activates a System environment |
+| Repeat | **Promote Component** | System pull request that selects a release in the next environment |
 
-When using microservices-style architecture, typically, an application is composed of several software components. The Developer Hub should reflect these groupings of software components into larger applications. Backstage natively models a one-to-many relationship between Systems and Components. Architects will use this Golden Path to introduce a new System. This workflow is a place where resources which are shared by many or all components in a system, such as a namespace, can be automatically provisioned.
+To onboard a tenant, follow [Getting started](docs/getting-started.md).
 
-Backstage Golden Paths are driven by templates, but since a System itself is not usually a deployable software Component, System templates tend to focus on configuration for shared application platform dependencies as well as providing a link between software Components and environments. In a GitOps-driven environment, this tiered relationship between environments, systems, and components. There are several techniques for achieving this composition pattern with a GitOps scheme including ArgoCD “app of apps”, Helm umbrella charts, and Kustomize external resource references.
+## Independent Release
 
-![GitOps Hierarchy](media/gitops-hierarchy.png)
+This repository starts at `1.0.0` and declares compatible dependency ranges independently:
 
-### API Specification Golden Path
+```text
+software-templates:  v1.0.0
+platform-components: >=1.0.0 <2.0.0
+developer-charts:    >=1.0.0 <2.0.0
+```
 
-Architects will use these Golden Paths to introduce a new _API_ entities and associate them with an existing _System_.
+Treat release tags as immutable. The platform target records the exact template and chart revisions
+selected by an installation. See [Release policy](docs/release-versioning.md).
 
-In order to encourage API-first or specification-first development, API specifications should have their own lifecycles, independent from any implementation of the specification. 
+## Documentation
 
-Note that the example templates promote the idea that even though an API specification itself is not a deployable software component in and of itself, an SDLC pipeline is still quite useful. An API specification pipeline provides a framework for API goverance enforcement via quality gates. A pipeline is also provides an execution environment for automation (especially automation that must be implemented with imperative procedures) such as API virtualization (automated API mock provisioning based on specification).
+- [Getting started](docs/getting-started.md) — platform target, organization prerequisites, and
+  tenant bootstrap
+- [Architecture and Git contracts](docs/architecture.md) — catalog model, ownership, desired-state
+  files, release workflows, and current constraints
+- [Development and testing](docs/development.md) — Backstage requirements, template changes, test
+  suites, and coordinated validation
 
-### API Consumer Golden Path
+Generated repository READMEs under `skeletons/**` are operational documentation for the
+application teams that own those repositories.
 
-The API Consumer Golden Path introduces a new _Component_ which represents a client implementation of an API specification.
+## Repository Structure
 
-At the point when an API specification has been developed and published. API consumer and producer development can happen in any order or in parallel. However, in demonstration, development of a consumer prior to the development of a producer highlights an important freedom that is afforded by an API-first approach. By preconfiguring code generation tooling such as [OpenAPI Generator](https://openapi-generator.tech/), a developer can start development with a purpose-built client which is automatically compliant with the specification. If the API is virtualized, the client could potentially interact with the resulting API mock instance, faciliating integration tests without depending on the completion of an API server implementation.
+| Path | Purpose |
+| --- | --- |
+| `catalog-info.yaml` | Backstage Location that registers the active templates |
+| `templates/` | Entity creation, System activation, and Component promotion templates |
+| `skeletons/` | Content rendered into generated repositories and pull requests |
+| `docs/` | Architecture, onboarding, and contributor guides |
+| `test/contracts/` | Template and template-to-chart contract tests |
+| `test/skeletons/` | Generated repository tests |
+| `test/coordinated/` | Manual current-source compatibility tests across sibling repositories |
+| `test/smoke/` and `test/live/` | Opt-in Backstage and external-service checks |
 
-### API Producer Golden Path
+## Development
 
-The API Consumer Golden Path introduces a new _Component_ which represents a server implementation of an API specification.
+Run the local deterministic suite:
 
-Again, by preconfiguring code generation tooling such as OpenAPI Generator, a developer can start development of an API producer with a generated server which is automatically compliant with the specification.
+```bash
+make test
+```
+
+The direct equivalent is `npm ci --prefix test` followed by `npm test --prefix test`. See
+[Development and testing](docs/development.md) before changing a template, skeleton, or shared
+Git contract.

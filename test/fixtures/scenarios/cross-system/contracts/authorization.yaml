@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: Payments Authorization API
+  version: 1.0.0
+paths:
+  /authorizations:
+    post:
+      operationId: authorizePayment
+      summary: Authorize a payment
+      responses:
+        '204': {description: Authorized}

@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: contract-first-idp-software-templates
+  description: Contract-first golden path templates
+spec:
+  type: url
+  targets:
+    - ./templates/domain/template.yaml
+    - ./templates/system/template.yaml
+    - ./templates/system/activation.yaml
+    - ./templates/api/template.yaml
+    - ./templates/component/template.yaml
+    - ./templates/resource/template.yaml
+    - ./templates/component/promotion.yaml

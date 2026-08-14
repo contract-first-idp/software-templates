@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: ${{ values.apiId }}
+  title: ${{ values.apiId }}
+  description: ${{ values.description }}
+  annotations:
+    contract-first-idp.github.io/scm-provider: ${{ values.scmProvider }}
+    contract-first-idp.github.io/scm-host: ${{ values.scmHost }}
+    contract-first-idp.github.io/domain-org: ${{ values.domainOrg }}
+    contract-first-idp.github.io/domain-repo: ${{ values.domainRepo }}
+    contract-first-idp.github.io/repository-name: ${{ values.repositoryName }}
+    contract-first-idp.github.io/schema-registry-group-id: ${{ values.registryGroupId }}
+    contract-first-idp.github.io/schema-registry-artifact-id: ${{ values.registryArtifactId }}
+spec:
+  type: openapi
+  lifecycle: production
+  owner: ${{ values.owner }}
+  system: ${{ values.systemRef }}
+  definition:
+    $text: ./specification.yaml

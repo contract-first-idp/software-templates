@@ -1,0 +1,3 @@
+systemName: bookinfo
+description: Bookinfo System
+domainRef: ${TEST_DOMAIN_REF}

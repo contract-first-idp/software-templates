@@ -1,0 +1,11 @@
+componentName: storefront-client
+description: Cross-System and vendor API consumer
+systemRef: system:cf-idp-integration-tests/storefront
+implementationProfile: quarkus-camel-openapi
+implementsApi: true
+apiRef: api:cf-idp-integration-tests/reviews
+providedApiVersion: v1.2.3
+consumedApis:
+  - {apiRef: 'api:payments/authorization', version: latest}
+  - {apiRef: 'api:cf-idp-integration-tests/details', version: v2.1.3}
+  - {apiRef: 'api:vendor/details', version: 0123456789abcdef0123456789abcdef01234567}

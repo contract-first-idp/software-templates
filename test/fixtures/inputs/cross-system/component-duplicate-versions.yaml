@@ -1,0 +1,8 @@
+componentName: version-comparison-client
+description: Component consuming two versions of the same API
+systemRef: system:cf-idp-integration-tests/storefront
+implementationProfile: quarkus-camel-openapi
+implementsApi: false
+consumedApis:
+  - {apiRef: 'api:cf-idp-integration-tests/details', version: v2.1.3}
+  - {apiRef: 'api:cf-idp-integration-tests/details', version: 0123456789abcdef0123456789abcdef01234567}

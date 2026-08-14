@@ -1,0 +1,172 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: openapi-specification-golden-path
+  title: OpenAPI Specification Golden Path
+  description: Create an independently governed OpenAPI contract.
+  annotations: {backstage-gitea.io/github-compatible: 'true'}
+  tags: [contract-first, openapi, api, tekton]
+spec:
+  owner: group:default/platform-maintainers
+  type: api
+  parameters:
+    - title: API
+      required: [apiId, description, systemRef]
+      properties:
+        apiId:
+          title: API ID
+          type: string
+          pattern: '^([a-z][a-z0-9]*)(-[a-z0-9]+)*$'
+        description: {title: Description, type: string}
+        systemRef:
+          title: System
+          type: string
+          ui:field: EntityPicker
+          ui:options:
+            allowArbitraryValues: false
+            catalogFilter: [{kind: System}]
+        specificationFile:
+          title: OpenAPI document (optional)
+          description: Upload a self-contained OpenAPI YAML or JSON document, or leave blank to start with a fresh OpenAPI 3.1 scaffold.
+          type: string
+          format: data-url
+          ui:options:
+            accept: .yaml,.yml,.json
+  steps:
+    - id: fetchSystem
+      name: Fetch System
+      action: catalog:fetch
+      input:
+        entityRef: ${{ parameters.systemRef }}
+        defaultKind: System
+        defaultNamespace: default
+    - id: fetchDomain
+      name: Fetch Domain
+      action: catalog:fetch
+      input:
+        entityRef: ${{ steps.fetchSystem.output.entity.spec.domain }}
+        defaultKind: Domain
+        defaultNamespace: default
+    - id: fetchTarget
+      name: Fetch platform target
+      action: catalog:fetch
+      input:
+        entityRef: ${{ steps.fetchDomain.output.entity.spec.platformTarget }}
+        defaultKind: Resource
+        defaultNamespace: default
+    - id: renderApiBase
+      name: Render OpenAPI repository
+      action: fetch:template
+      input:
+        url: ../../skeletons/api/base
+        targetPath: api-repo
+        values:
+          api_id: ${{ parameters.apiId }}
+          description: ${{ parameters.description }}
+          registryGroupId: ${{ steps.fetchSystem.output.entity.spec.groupId }}
+          schemaRegistryApiUrl: ${{ steps.fetchTarget.output.entity.spec.platform.schemaRegistry.apiUrl }}
+    - id: prepareSpecification
+      name: Prepare OpenAPI document
+      action: roadiehq:utils:jsonata
+      input:
+        data:
+          dataUrl: ${{ parameters.specificationFile }}
+          apiId: ${{ parameters.apiId }}
+          description: ${{ parameters.description }}
+        expression: >-
+          (
+            $hasUpload := $exists(dataUrl) and $trim($string(dataUrl)) != "";
+            {"content": $hasUpload
+              ? $base64decode($substringAfter(dataUrl, "base64,"))
+              : $string({
+                  "openapi": "3.1.0",
+                  "info": {
+                    "title": apiId,
+                    "description": description,
+                    "version": "0.1.0"
+                  },
+                  "paths": {}
+                })}
+          )
+    - id: writeSpecification
+      name: Write OpenAPI document
+      action: roadiehq:utils:fs:write
+      input:
+        path: api-repo/specification.yaml
+        content: ${{ steps.prepareSpecification.output.result.content }}
+        preserveFormatting: true
+    - id: renderCatalog
+      name: Render API catalog entity
+      action: fetch:template
+      input:
+        url: ../../skeletons/api/catalog
+        targetPath: api-repo
+        values:
+          apiId: ${{ parameters.apiId }}
+          description: ${{ parameters.description }}
+          owner: group:default/domain-maintainers
+          systemRef: ${{ parameters.systemRef }}
+          scmProvider: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-provider'] or 'github' }}
+          scmHost: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}
+          domainOrg: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}
+          domainRepo: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-repo'] }}
+          repositoryName: ${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.apiId }}-api
+          registryGroupId: ${{ steps.fetchSystem.output.entity.spec.groupId }}
+          registryArtifactId: ${{ parameters.apiId }}
+    - id: renderBuild
+      name: Render API build values
+      action: fetch:template
+      input:
+        url: ../../skeletons/api/system-repo
+        targetPath: system-pr/apis/${{ parameters.apiId }}
+        values:
+          apiId: ${{ parameters.apiId }}
+          apiRepoCloneUrl: https://${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}/${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}/${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.apiId }}-api.git
+    - id: publish
+      name: Publish API repository
+      action: publish:github
+      input:
+        sourcePath: api-repo
+        repoUrl: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}?owner=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}&repo=${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.apiId }}-api
+        description: ${{ parameters.description }}
+        defaultBranch: main
+        repoVisibility: public
+        protectDefaultBranch: true
+        requiredApprovingReviewCount: 0
+        protectEnforceAdmins: true
+        collaborators:
+          - {team: domain-maintainers, access: maintain}
+          - {team: domain-contributors, access: push}
+          - {team: domain-viewers, access: pull}
+    - id: register
+      name: Register API
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+    - id: webhook
+      name: Create API build webhook
+      action: github:webhook
+      input:
+        repoUrl: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}?owner=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}&repo=${{ steps.fetchSystem.output.entity.metadata.name }}-${{ parameters.apiId }}-api
+        webhookUrl: https://el-${{ parameters.apiId }}-api-${{ steps.fetchSystem.output.entity.metadata.name }}${{ steps.fetchDomain.output.entity.spec.environments.definitions[steps.fetchDomain.output.entity.spec.environments.build].namespaceSuffix }}.${{ steps.fetchTarget.output.entity.spec.platform.cluster.routerDomain }}
+        events: [push]
+        active: true
+        contentType: json
+        insecureSsl: false
+    - id: systemPr
+      name: Open System API build pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: ${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/scm-host'] }}?owner=${{ steps.fetchDomain.output.entity.metadata.annotations['contract-first-idp.github.io/domain-org'] }}&repo=${{ steps.fetchSystem.output.entity.metadata.annotations['contract-first-idp.github.io/repository-name'] or (steps.fetchSystem.output.entity.metadata.name + '-system') }}
+        branchName: add-api-${{ parameters.apiId }}
+        title: Add API ${{ parameters.apiId }}
+        description: Add API build values; Domain policy selects the build environment.
+        sourcePath: system-pr
+        createWhenEmpty: false
+  output:
+    links:
+      - {title: API repository, url: '${{ steps.publish.output.remoteUrl }}'}
+      - {title: System pull request, url: '${{ steps.systemPr.output.remoteUrl }}'}
+      - title: API catalog entity
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

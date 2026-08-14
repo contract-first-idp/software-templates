@@ -1,0 +1,31 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: ${{ values.resourceName }}
+  title: ${{ values.resourceName }}
+  description: PostgreSQL database for ${{ values.systemName }}
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    contract-first-idp.github.io/scm-provider: ${{ values.scmProvider }}
+    contract-first-idp.github.io/scm-host: ${{ values.scmHost }}
+    contract-first-idp.github.io/domain-org: ${{ values.domainOrg }}
+    contract-first-idp.github.io/domain-repo: ${{ values.domainRepo }}
+    contract-first-idp.github.io/repository-name: ${{ values.repositoryName }}
+  links:
+    - title: Resource repository
+      url: ${{ values.repoWebUrl }}
+      icon: github
+spec:
+  type: database
+  owner: ${{ values.owner }}
+  system: ${{ values.systemRef }}
+  repository:
+    name: ${{ values.repositoryName }}
+    revision: main
+  profile: ${{ values.profile }}
+  database:
+    engine: postgresql
+    operator: crunchy-postgres-operator
+    postgresVersion: ${{ values.postgresVersion }}
+    databaseName: ${{ values.databaseName }}
+    userName: ${{ values.userName }}

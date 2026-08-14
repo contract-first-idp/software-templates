@@ -1,0 +1,117 @@
+openapi: 3.0.3
+info:
+    title: reviews
+    description: Reviews API
+    version: v1
+servers:
+    - url: http://localhost:8080
+paths:
+    '/reviews/{id}':
+        get:
+            tags:
+                - review
+            parameters:
+                -
+                    examples:
+                        product_1:
+                            value: 1
+                    name: id
+                    description: Product id
+                    schema:
+                        format: int32
+                        type: integer
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Reviews'
+                            examples:
+                                product_1:
+                                    value:
+                                        id: '1'
+                                        podname: 6204fe3a363f
+                                        clustername: 'null'
+                                        reviews:
+                                            -
+                                                reviewer: Reviewer1
+                                                text: >-
+                                                    An extremely entertaining play by Shakespeare. The
+                                                    slapstick humour is refreshing!
+                                            -
+                                                reviewer: Reviewer2
+                                                text: >-
+                                                    Absolutely fun and entertaining. The play lacks thematic
+                                                    depth when compared to other plays by Shakespeare.
+                    description: successful operation
+                '400':
+                    description: Invalid product id
+            operationId: getProductReviews
+            summary: Get reviews for a product
+            description: 'Get reviews for a product, including review text and possibly ratings information.'
+components:
+    schemas:
+        Reviews:
+            description: Object containing reviews for a product
+            required:
+                - id
+                - reviews
+            type: object
+            properties:
+                id:
+                    description: Product id
+                    type: string
+                podname:
+                    description: Pod name
+                    type: string
+                clustername:
+                    description: Cluster name
+                    type: string
+                reviews:
+                    description: List of reviews
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Review'
+        Review:
+            description: Review of a product
+            required:
+                - reviewer
+                - text
+            type: object
+            properties:
+                reviewer:
+                    description: Name of the reviewer
+                    type: string
+                text:
+                    description: Review text
+                    type: string
+                rating:
+                    $ref: '#/components/schemas/Rating'
+        Rating:
+            description: Rating of a product
+            required:
+                - color
+                - stars
+            type: object
+            properties:
+                stars:
+                    format: int32
+                    description: Number of stars
+                    maximum: 5
+                    minimum: 1
+                    type: integer
+                color:
+                    description: Color in which stars should be displayed
+                    enum:
+                        - red
+                        - black
+                    type: string
+tags:
+    -
+        name: review
+        description: Review information for a product
+externalDocs:
+    description: Learn more about the Istio BookInfo application
+    url: 'https://istio.io/docs/test/fixtures/scenarios/bookinfo.html'

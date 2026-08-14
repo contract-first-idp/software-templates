@@ -1,0 +1,5 @@
+systemName: ${{ values.systemName }}
+groupId: ${{ values.groupId }}
+repository:
+  cloneUrl: ${{ values.systemRepoCloneUrl }}
+  revision: ${{ values.systemRepoRevision }}

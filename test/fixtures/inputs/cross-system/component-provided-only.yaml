@@ -1,0 +1,8 @@
+componentName: reviews-provider
+description: Component implementing one published API
+systemRef: system:cf-idp-integration-tests/storefront
+implementationProfile: spring-boot-openapi
+implementsApi: true
+apiRef: api:cf-idp-integration-tests/reviews
+providedApiVersion: v1.2.3
+consumedApis: []

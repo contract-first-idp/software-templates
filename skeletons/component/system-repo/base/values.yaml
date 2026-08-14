@@ -1,0 +1,6 @@
+implementationProfile: ${{ values.implementationProfile }}
+build:
+  enabled: ${{ values.buildEnabled }}
+  profile: ${{ values.buildProfile }}
+  repository: ${{ values.componentRepoCloneUrl }}
+  revision: ${{ values.sourceRevision }}

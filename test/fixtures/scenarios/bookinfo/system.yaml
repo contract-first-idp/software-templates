@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: bookinfo
+  namespace: cf-idp-integration-tests
+  title: '[TEST] Bookinfo System'
+  description: Staged System used by the Bookinfo integration-test application.
+  annotations:
+    contract-first-idp.github.io/scm-provider: github
+    contract-first-idp.github.io/scm-host: github.com
+    contract-first-idp.github.io/domain-org: contract-first-idp
+    contract-first-idp.github.io/domain-repo: software-templates
+    contract-first-idp.github.io/repository-name: bookinfo-system
+spec:
+  owner: group:default/domain-maintainers
+  domain: domain:cf-idp-integration-tests/cf-idp-integration-tests
+  groupId: io.github.cfidp.bookinfo

@@ -1,0 +1,6 @@
+componentName: catalog-ui
+description: Component without API contracts
+systemRef: system:cf-idp-integration-tests/storefront
+implementationProfile: spring-boot-openapi
+implementsApi: false
+consumedApis: []

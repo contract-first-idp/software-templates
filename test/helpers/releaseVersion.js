@@ -1,0 +1,12 @@
+const RELEASE_VERSION_PATTERN_SOURCE = String.raw`^v[0-9]+(\.[0-9]+){0,2}(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$`;
+const API_VERSION_PATTERN_SOURCE = String.raw`^(latest|v[0-9]+(\.[0-9]+){0,2}(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?|[0-9a-fA-F]{40})$`;
+
+const RELEASE_VERSION_PATTERN = new RegExp(RELEASE_VERSION_PATTERN_SOURCE);
+const API_VERSION_PATTERN = new RegExp(API_VERSION_PATTERN_SOURCE);
+
+module.exports = {
+  API_VERSION_PATTERN,
+  API_VERSION_PATTERN_SOURCE,
+  RELEASE_VERSION_PATTERN,
+  RELEASE_VERSION_PATTERN_SOURCE,
+};
